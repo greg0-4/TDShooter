@@ -8,6 +8,8 @@
 #define QUESTION_COLLIDER 8
 #define COIN_COLLIDER 9
 #define FLOWER_COLLIDER 10
+#define FIREBALL_COLLIDER 11
+#define ENDLEVEL_COLLIDER 12
 
 
 #define GRAVITY 1
@@ -185,6 +187,24 @@ class Flower : Coin
 {
 } flower_que;
 
+class Fireball : CQue
+{
+  Collider *myCol;
+  Vector2 vel;
+  CDC *curSprite;
+  I8 curFrame;
+  I8 frameTimer;
+  Bool grounded;
+  Bool delete;
+} fireball_que;
+
+class EndLevel : CQue
+{
+  Collider *myCol;
+  Vector2 pos;
+  I8 yOffset;
+} endlevel_que;
+
 QuestionPart *NewQuestionPart(F64 x, F64 y, CDC *sprite, I64 timerReset = 1, I8 type = 1)
 {
   QuestionPart *new = CAlloc(sizeof(QuestionPart));
@@ -215,7 +235,7 @@ Collider *NewCollider(F64 x1, F64 y1, F64 x2, F64 y2, F64 type)
   new->size.x = x2;
   new->size.y = y2;
   new->type = type;
-  QueIns(new, collider_que.last);
+  QueIns(new, collider_que);
   return new;
 }
 
@@ -241,7 +261,7 @@ Slug *NewSlug(F64 x, F64 y)
   new->curFrame = 1;
   new->speed = 2;
   new->Health = 1;
-  QueIns(new, slug_que.last);
+  QueIns(new, slug_que);
   return new;
 }
 
@@ -266,7 +286,7 @@ Turtle *NewTurtle(F64 x, F64 y)
   new->walk_frameSpeed = 5;
   new->curFrame = 1;
   new->speed = 1.5;
-  QueIns(new, turtle_que.last);
+  QueIns(new, turtle_que);
   return new;
 }
 
@@ -360,24 +380,6 @@ U0 DelQuestion(QuestionBlock *a)
   Free(a);
 }
 
-Bullet *NewBullet(Vector2 *vel, F64 x, F64 y)
-{
-  "\n[%f] [%f]",vel->x,vel->y;
-  Bullet *new = CAlloc(sizeof(Bullet));
-  new->vel.x = vel->x;
-  new->vel.y = vel->y;
-  new->myCollider = NewCollider(x, y, 8, 8, 3);
-  QueIns(new, bullet_que.last);
-  return new;
-}
-
-U0 DelBullet(Bullet *a)
-{
-  DelCollider(a->myCollider);
-  QueRem(a);
-  Free(a);
-}
-
 Particle *NewParticle(F64 x, F64 y, CDC *sprite, F64 velX = 0, F64 velY = 0)
 {
   Particle *new = CAlloc(sizeof(Particle));
@@ -422,6 +424,46 @@ Flower *NewFlower(F64 x, F64 y)
 }
 
 U0 DelFlower(Flower *a)
+{
+  DelCollider(a->myCol);
+  QueRem(a);
+  Free(a);
+}
+
+Fireball *NewFireball(F64 x, F64 y, Bool isLookingRight = TRUE;)
+{
+  Fireball *new = CAlloc(sizeof(Fireball));
+  new->curSprite = tex_Fireball1;
+  new->delete = FALSE;
+  new->frameTimer = 0;
+  if(isLookingRight)
+    new->vel.x = 8;
+  else
+    new->vel.x = -8;
+  new->myCol = NewCollider(x, y, 12, 12, FIREBALL_COLLIDER);
+  QueIns(new, fireball_que.last);
+  return new;
+}
+
+U0 DelFireball(Fireball *a)
+{
+  DelCollider(a->myCol);
+  QueRem(a);
+  Free(a);
+}
+
+EndLevel *NewEndLevel(F64 x, F64 y)
+{
+  EndLevel *new = CAlloc(sizeof(EndLevel));
+  new->pos.x = x;
+  new->pos.y = y;
+  new->myCol = NewCollider(x, y, 48, 12, ENDLEVEL_COLLIDER);
+  new->yOffset = 0;
+  QueIns(new, endlevel_que.last);
+  return new;
+}
+
+U0 DelEndLevel(EndLevel *a)
 {
   DelCollider(a->myCol);
   QueRem(a);
@@ -570,7 +612,7 @@ U0 PlayerPowerUp(Bool shroom = TRUE)
   if(plr.powerUp == 1 && shroom)
     return;
 
-  if(plr.powerUp == 1)
+  if(plr.powerUp == 1)
   {
     g_Paused = TRUE;
     plr.immune = TRUE;
@@ -604,16 +646,32 @@ F64 Lerp(F64 a, F64 b, F64 t)
   return a + t * (b - a);
 }
 
+U0 CleanUpQueues()
+{
+  QueDel(&collider_que);
+  QueDel(&slug_que);
+  QueDel(&particle_que);
+  QueDel(&turtle_que);
+  QueDel(&tshell_que);
+  QueDel(&shroom_que);
+  QueDel(&brick_que);
+  QueDel(&question_que);
+  QueDel(&questionpart_que);
+  QueDel(&coin_que);
+  QueDel(&flower_que);
+  QueDel(&fireball_que);
+  QueDel(&endlevel_que);
+}
+
 U0 Init()
 {
 
-  LoadMap("Maps/Test.TXT");
 /*  current_map.mapArray = &gameMap;
   current_map.width = 20;
   current_map.height = MAP_HEIGHT; */
+LoadMap("Maps/Test.TXT");
   QueInit(&collider_que);
   QueInit(&particle_que);
-  QueInit(&bullet_que);
   QueInit(&slug_que);
   QueInit(&turtle_que);
   QueInit(&tshell_que);
@@ -623,6 +681,8 @@ U0 Init()
   QueInit(&questionpart_que);
   QueInit(&coin_que);
   QueInit(&flower_que);
+  QueInit(&fireball_que);
+  QueInit(&endlevel_que);
 
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);
@@ -655,7 +715,7 @@ U0 Init()
   keys.left = FALSE;
   keys.right = FALSE;
   keys.space = FALSE;
-  LoadMap("/Maps/Test.TXT");
+  
   InitMapEntities;
 }
 
@@ -682,9 +742,8 @@ U0 PlayerDie()
     return;
   }
   cont:
-  QueDel(&collider_que);
-  QueDel(&bullet_que);
-  QueDel(&slug_que);
+  CleanUpQueues;
+  
   Init;
 }
 

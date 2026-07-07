@@ -232,7 +232,7 @@ U0 FlowerPlrCollision(Collider *a)
       goto cont;
     if(AABBCollision(plr.myCollider, temp->myCol))
     {
-      DelFlower(temp);
+      DelFlower(temp);
       PlayerPowerUp(FALSE);
       goto cont;
     }
@@ -771,47 +771,7 @@ Bool CheckBulletCollision(Bullet *bullet)
   return FALSE;
 }
 
-U0 UpdateBullets()
-{
-  Bullet *temp = bullet_que.next;
-  while(temp != &bullet_que)
-  {
-    Bool delete = FALSE;
-    Bullet *next = temp->next;
-    temp->myCollider->pos.x += temp->vel.x;
-    temp->myCollider->pos.y += temp->vel.y;
-    if(CheckBulletCollision(temp))
-    {
-      delete = TRUE;
-    }
-    if(temp->myCollider->pos.x - camOffset.x > 640)
-    {
-      delete = TRUE;
-    }
-    else if(temp->myCollider->pos.x - camOffset.x < 0)
-    {
-      delete = TRUE;
-    }
-    else if(temp->myCollider->pos.y - camOffset.y > 480)
-    {
-      delete = TRUE;
-    }
-    else if(temp->myCollider->pos.y - camOffset.y < 0)
-    {
-      delete = TRUE;
-    }
-    if(delete)
-    {
-      DelBullet(temp);
-    }
-    temp = next;
-  }
-}
-
-
-
-// Enemy Logic
-
+// Enemy logic
 U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
 {
 
@@ -833,6 +793,7 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
       goto enemy_continue;
     }
 
+
     if(a->myCol->type == ENEMY_COLLIDER && temp->type == ENEMY_COLLIDER)
     {
       goto enemy_shell_cont;
@@ -849,6 +810,35 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
     if(AABBCollision(a->myCol, temp))
     {
 
+      if(a->myCol->type == ENEMY_COLLIDER && temp->type == FIREBALL_COLLIDER)
+      {
+	// Fucking fireballs for some reason dont get fucking deleted
+	// So im forced to make a loop here
+	Fireball *ftemp = fireball_que.next;
+	while(ftemp != &fireball_que)
+	{
+	  Fireball *fnext = ftemp->next;
+	  if(ftemp->myCol != temp)
+	  {
+	    goto fire_cont;
+	  }
+	  ftemp->delete = TRUE;
+	  a->Health = - 1;
+	  fire_cont:
+	  ftemp = fnext;
+	}
+        goto enemy_continue;
+      }
+
+      if(a->myCol->type == TSHELL_COLLIDER && temp->type == FIREBALL_COLLIDER)
+      {
+	a->Health = 0;
+	goto enemy_continue;
+      }
+
+      if(a->myCol->type == SHROOM_COLLIDER && temp->type == FIREBALL_COLLIDER)
+        goto enemy_continue;
+
       if(a->myCol->type == SHROOM_COLLIDER && temp->type == SHROOM_COLLIDER)
       {
         goto enemy_continue;
@@ -858,6 +848,7 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
       {
 	goto bounceOff;
       }
+
 
       if(a->myCol->type == TSHELL_COLLIDER && temp->type == ENEMY_COLLIDER)
       {
@@ -1093,7 +1084,15 @@ U0 UpdateTurtles()
     Turtle *next = temp->next;
     UpdateEnemy(temp);
     UpdateTurtleAnimation(temp);
-    if(temp->Health <= 0)
+    if(temp->Health == -1)
+    {
+
+      NewParticle(temp->myCol->pos.x,
+      temp->myCol->pos.y,
+      tex_Turtle_Shell);
+      DelTurtle(temp);
+    }
+    if(temp->Health == 0)
     {
       NewTShell(temp->myCol->pos.x,
       temp->myCol->pos.y,
@@ -1412,8 +1411,159 @@ U0 UpdateFlowers()
   }
 }
 
+U0 FireballCollisions(Fireball *a, Collider *temp, Bool yAxis = FALSE)
+{
+  if(!yAxis)
+  {
+    if(AABBCollision(a->myCol, temp))
+    {
+      switch(temp->type)
+      {
+	case WALL_COLLIDER: 
+	case BREAKABLE_COLLIDER:
+	case QUESTION_COLLIDER:
+	case ENEMY_COLLIDER:
+	case TSHELL_COLLIDER:
+	  a->delete = TRUE;
+	  return;
+        break;
+      }
+    }
+  }
+  else
+  {
+    if(AABBCollision(a->myCol, temp))
+    {
+      switch(temp->type)
+      {
+	case WALL_COLLIDER:
+	case BREAKABLE_COLLIDER:
+	case QUESTION_COLLIDER:
+	if(a->vel.y > 0)
+	{
+	  a->myCol->pos.y = temp->pos.y - a->myCol->size.y;
+	  a->vel.y = -8;
+	}
+        else
+        {
+	  a->vel.y = 0;
+        }
+	
+	break;
+      }
+    }
+  }
 
+}
 
+U0 UpdateFireball(Fireball *a)
+{
+
+  a->myCol->pos.x += a->vel.x;
+  Collider *temp = collider_que.next;
+  while(temp != &collider_que)
+  {
+    Collider *next = temp->next;
+
+    Bool isPlr = isColliderPlayer(temp);
+    if(isPlr)
+      goto cont_x;
+    if(a->myCol == temp)
+      goto cont_x;
+    FireballCollisions(a, temp);
+    cont_x:
+    temp = next;
+  }
+  a->vel.y += GRAVITY;
+  if(a->vel.y > 8)
+    a->vel.y = 8;
+  a->myCol->pos.y += a->vel.y;
+  temp = collider_que.next;
+  while(temp != &collider_que)
+  {
+    next = temp->next;
+
+    isPlr = isColliderPlayer(temp);
+    if(isPlr)
+      goto cont_y;
+    if(a->myCol == temp)
+      goto cont_y;
+    FireballCollisions(a, temp, TRUE);
+    cont_y:
+    temp = next;
+  }
+
+  F64 posX = a->myCol->pos.x - camOffset.x;
+  F64 posY = a->myCol->pos.y - camOffset.y;
+
+  if(posX <= -24)
+  {
+    a->delete = TRUE;
+    return;
+  }
+
+  if(posX > 660)
+  {
+    a->delete = TRUE;
+    return;
+  }
+
+  if(posY > 480)
+  {
+    a->delete = TRUE;
+    return;
+  }
+
+  if(posY <= - 24)
+  {
+    a->delete = TRUE;
+    return;
+  }
+  
+}
+
+U0 UpdateFireballAnim(Fireball *a)
+{
+  a->frameTimer--;
+
+  switch(a->curFrame)
+  {
+    default: a->curSprite = tex_Fireball1; break;
+    case 1: a->curSprite = tex_Fireball1; break;
+    case 2: a->curSprite = tex_Fireball2; break;
+    case 3: a->curSprite = tex_Fireball3; break;
+    case 4: a->curSprite = tex_Fireball4; break;
+  }
+
+  if(a->curFrame > 4)
+  {
+    a->curFrame = 1;
+  }
+  if(a->frameTimer <= 0)
+  {
+    a->curFrame++;
+    a->frameTimer = 5;
+  }
+}
+
+U0 UpdateFireballs()
+{
+  Fireball *temp = fireball_que.next;
+  while(temp != &fireball_que)
+  {
+    Fireball *next = temp->next;
+
+    UpdateFireballAnim(temp);
+    UpdateFireball(temp);
+    if(temp->delete)
+    {
+      DelFireball(temp);
+      goto cont;
+    }
+    cont:
+    temp = next;
+  }
+}
 
 
 

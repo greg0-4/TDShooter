@@ -18,9 +18,7 @@ GrPaletteSet(gr_palette_std_a);
 U0 CleanUp()
 {
   // Free all the queues and stuff
-  QueDel(&collider_que);
-  QueDel(&slug_que);
-  QueDel(&bullet_que);
+  CleanUpQueues;
 }
 
 U0 DrawIt(CTask *task, CDC *dc)
@@ -32,26 +30,25 @@ U0 DrawIt(CTask *task, CDC *dc)
   UpdatePlayerImmune;
   if(!g_Paused)
   {
+    UpdateFireballs;
+    ShootFireball;
     UpdatePlrMove;
     UpdateBreakables;
     UpdateQuestions;
     UpdateQuestionParts;
-    UpdateBullets;
     UpdateCam;
     UpdateSlugs;
     UpdateTShells;
     UpdateTurtles;
     UpdateShrooms;
-    UpdateFlowers;
+    UpdateFlowers;
     UpdateCoins;
     UpdateParticles;
     
   }
-  ShootBulletLogic;
   UpdateMousePos;
 
 
-  DrawBullets(dc);
   DrawColliders(dc);
   DrawMap(dc);
   DrawQuestionParts(dc);
@@ -67,6 +64,7 @@ U0 DrawIt(CTask *task, CDC *dc)
   DrawCoins(dc);
   DrawPlayer(dc);
   DrawParticles(dc);
+  DrawFireballs(dc);
   dc->color = WHITE;
   GrPrint(dc,76, 24, "PlumberMan");
   GrPrint(dc,76, 34, "000000");

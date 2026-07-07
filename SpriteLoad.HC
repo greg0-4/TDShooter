@@ -73,8 +73,8 @@ CDC *tex_Turtle_Walk2Right = GRRead("Sprites/Turtle/Walk2Right.GR.Z");
 CDC *tex_Turtle_Shell = GRRead("Sprites/Turtle/Shell.GR.Z");
 
 CDC *tex_Powerup_Shroom = GRRead("Sprites/PowerUps/Shroom.GR.Z");
-CDC *tex_Powerup_Flower1 = GRRead("Sprites/Flower/Flower1.GR.Z");
-CDC *tex_Powerup_Flower2 = GRRead("Sprites/Flower/Flower2.GR.Z");
+CDC *tex_Powerup_Flower1 = GRRead("Sprites/Flower/Flower1.GR.Z");
+CDC *tex_Powerup_Flower2 = GRRead("Sprites/Flower/Flower2.GR.Z");
 
 
 
@@ -84,3 +84,9 @@ CDC *tex_Particle_BrickRight = GRRead("Sprites/Particles/BrickRight.GR.Z");
 CDC *tex_Particle_Coin1 = GRRead("Sprites/Particles/Coin1.GR.Z");
 CDC *tex_Particle_Coin2 = GRRead("Sprites/Particles/Coin2.GR.Z");
 CDC *tex_Particle_Coin3 = GRRead("Sprites/Particles/Coin3.GR.Z");
+
+CDC *tex_Fireball1 = GRRead("Sprites/Fireball/1.GR.Z");
+CDC *tex_Fireball2 = GRRead("Sprites/Fireball/2.GR.Z");
+CDC *tex_Fireball3 = GRRead("Sprites/Fireball/3.GR.Z");
+CDC *tex_Fireball4 = GRRead("Sprites/Fireball/4.GR.Z");
+

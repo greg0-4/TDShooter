@@ -32,7 +32,7 @@ Bool isEnemyAbove(Collider *a)
     if(t_temp->myCol->pos.x < zone_right &&
     t_temp->myCol->pos.x + t_temp->myCol->size.x > zone_left &&
     t_temp->myCol->pos.y < zone_bottom &&
-    t_temp->myCol->pos.y + t_temp->myCol->size.y > zone_top)
+    t_temp->myCol->pos.y + t_temp->myCol->size.y > zone_top)
     {
       KillTurtle(t_temp);
       t_temp = t_next;
@@ -78,24 +78,18 @@ Bool isEnemyAbove(Collider *a)
   return FALSE;
 }
 
-U0 ShootBulletLogic()
-{
 
+U0 ShootFireball()
+{
+  if(QueCnt(&fireball_que) >= 2)
+  {
+    return;
+  }
+  if(plr.powerUp != 2)
+    return;
   if(keys.space)
   {
-    I64 bulletSpeed = 10;
-    F64 distanceX = ms.pos.x - plr.myCollider->pos.x;
-    F64 distanceY = ms.pos.y - plr.myCollider->pos.y;
-    
-    F64 totalDistance = Sqrt((distanceX * distanceX) + (distanceY * distanceY));
-
-    Vector2 velocity;
-    velocity.x = (distanceX / totalDistance) * bulletSpeed;
-    velocity.y = (distanceY / totalDistance) * bulletSpeed;
-
-    NewBullet(&velocity, plr.myCollider->pos.x, plr.myCollider->pos.y);
+    NewFireball(plr.myCollider->pos.x, plr.myCollider->pos.y, plr.isLookingRight);
     keys.space = FALSE;
   }
-
 }
-

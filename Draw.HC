@@ -5,7 +5,7 @@ U0 DrawSky(CDC *dc)
   dc->color=ROPF_DITHER+LTBLUE<<16+WHITE;
   GrRect3(dc,0,0,0,640,480);
   GrBlot(dc, 500, 50, tex_Sun);
-  GrBlot(dc, 100, 100, tex_Cloud);
+  GrBlot(dc, 100, 100, tex_Cloud);
   GrBlot(dc, 120, 105, tex_Cloud);
  GrBlot(dc, 220, 100, tex_Cloud);
  GrBlot(dc, 300, 90, tex_Cloud);
@@ -26,18 +26,6 @@ dc->color=ROPF_DITHER+GREEN<<16+TRANSPARENT;
   dc->color = BLACK;
 }
 
-U0 DrawBullets(CDC *dc)
-{
-  dc->color = BLACK;
-  Bullet *temp = bullet_que.next;
-  while(temp != &bullet_que)
-  {
-    Bullet *next = temp->next;
-    GrPrint(dc, temp->myCollider->pos.x - camOffset.x, temp->myCollider->pos.y - camOffset.y, "[%f] [%f]",temp->vel.x,temp->vel.y);
-    temp = next;
-  }
-  dc->color = BLACK;
-}
 
 U0 DrawMap(CDC *dc)
 {
@@ -326,10 +314,25 @@ U0 DrawFlowers(CDC *dc)
     temp->curSprite);
     cont:
     temp = next;
-     
+     
   }
 }
 
+U0 DrawFireballs(CDC *dc)
+{
+  Fireball *temp = fireball_que.next;
+  while(temp != &fireball_que)
+  {
+    Fireball *next = temp->next;
+    F64 posX = temp->myCol->pos.x - camOffset.x;
+    F64 posY = temp->myCol->pos.y - camOffset.y;
+    GrBlot(dc,
+    posX,
+    posY,
+    temp->curSprite);
+    temp = next;
+  }
+}
 
 
 
