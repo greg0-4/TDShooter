@@ -31,7 +31,7 @@ U0 DrawIt(CTask *task, CDC *dc)
   if(!g_Paused)
   {
     UpdateFireballs;
-    ShootFireball;
+    ShootFireball;
     UpdatePlrMove;
     UpdateBreakables;
     UpdateQuestions;
@@ -44,12 +44,12 @@ U0 DrawIt(CTask *task, CDC *dc)
     UpdateFlowers;
     UpdateCoins;
     UpdateParticles;
-    
+    UpdateEndLevels;    
   }
   UpdateMousePos;
 
 
-  DrawColliders(dc);
+//  DrawColliders(dc);
   DrawMap(dc);
   DrawQuestionParts(dc);
   DrawBricks(dc);
@@ -62,9 +62,11 @@ U0 DrawIt(CTask *task, CDC *dc)
   UpdatePlayerAnimation;
   
   DrawCoins(dc);
+  DrawEndLevels(dc);
   DrawPlayer(dc);
   DrawParticles(dc);
   DrawFireballs(dc);
+  DrawEndFadeIn(dc);
   dc->color = WHITE;
   GrPrint(dc,76, 24, "PlumberMan");
   GrPrint(dc,76, 34, "000000");

@@ -49,12 +49,14 @@ class Player
   Bool isJumping;
   Bool isFalling;
   Bool isLookingRight;
+  Bool isFinished;
   F64 gravity;
   F64 acceleration;
   I8 powerUp;
   I8 walkFrame;
   I64 walk_frameSpeed;
   I64 walk_frameSpeedReset;
+  I64 endlevel_Timer;
 
   Bool ducking;
 
@@ -66,6 +68,7 @@ class Player
   I8 pauseTimer;
 
   I64 coins;
+  I64 score;
 } plr;
 
 class PlayerColStatus
@@ -201,8 +204,10 @@ class Fireball : CQue
 class EndLevel : CQue
 {
   Collider *myCol;
+  Collider *endCol;
   Vector2 pos;
   I8 yOffset;
+  Bool bounceDown;
 } endlevel_que;
 
 QuestionPart *NewQuestionPart(F64 x, F64 y, CDC *sprite, I64 timerReset = 1, I8 type = 1)
@@ -457,7 +462,8 @@ EndLevel *NewEndLevel(F64 x, F64 y)
   EndLevel *new = CAlloc(sizeof(EndLevel));
   new->pos.x = x;
   new->pos.y = y;
-  new->myCol = NewCollider(x, y, 48, 12, ENDLEVEL_COLLIDER);
+  new->myCol = NewCollider(x, y, 48, 12, ENDLEVEL_COLLIDER);
+  new->endCol = NewCollider(x - 24, 0, 8, 480, ENDLEVEL_COLLIDER);
   new->yOffset = 0;
   QueIns(new, endlevel_que.last);
   return new;
@@ -533,9 +539,9 @@ Vector2 camOffset;
 U0 InitMapEntities()
 {
   I64 x,y = 0;
-  for(x=0;x<current_map.width;x++)
+  for(y=0;y<current_map.height;y++)
   {
-    for(y=0;y<current_map.height;y++)
+    for(x=0;x<current_map.width;x++)
     {
       I64 tile = current_map.entityArray[x + y * current_map.width];
       switch(tile)
@@ -553,6 +559,7 @@ U0 InitMapEntities()
 	case 8: NewQuestion(x*24, y*24, 10, TRUE); break;
 	case 9: NewQuestion(x*24, y*24,,,TRUE); break;
 	case 10: NewCoin(x*24, y*24); break;
+	case 11: NewEndLevel(x*24, y*24); break;
       }
     }
   }
@@ -582,7 +589,7 @@ U0 LoadMap(U8 *file)
   {
     for(x=0;x<width;x++)
     {
-      while(*ptr == ' ' || *ptr == '\n' || *ptr == '\r')
+      while(*ptr && (*ptr == ' ' || *ptr == '\t' || *ptr == '\n' || *ptr == '\r'))
       {
         ptr++;
       }
@@ -663,13 +670,13 @@ U0 CleanUpQueues()
   QueDel(&endlevel_que);
 }
 
-U0 Init()
+U0 Init(Bool keepData = FALSE)
 {
 
 /*  current_map.mapArray = &gameMap;
   current_map.width = 20;
   current_map.height = MAP_HEIGHT; */
-LoadMap("Maps/Test.TXT");
+LoadMap("Maps/Test1.TXT");
   QueInit(&collider_que);
   QueInit(&particle_que);
   QueInit(&slug_que);
@@ -687,7 +694,6 @@ LoadMap("Maps/Test.TXT");
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);
   plr.footCol = NewCollider(2, 22, 8, 4, 1); 
-  plr.powerUp = 0;
   plr.vel.x = 0;
   plr.vel.y = 0;
   plr.acceleration = 1.3;
@@ -701,7 +707,12 @@ LoadMap("Maps/Test.TXT");
   // Flashing sprite, not actual immune timer
   plr.immuneTimer = 0;
   plr.immune = FALSE;
-  plr.powerUp = 0;
+  if(!keepData)
+  {
+    plr.powerUp = 0;
+  }
+  plr.isFinished = FALSE;
+  plr.endlevel_Timer = 0;
 
   plr.pauseTimer = 15;
 
@@ -722,6 +733,10 @@ LoadMap("Maps/Test.TXT");
 
 U0 PlayerDie()
 {
+  if(plr.isFinished)
+  {
+    return;
+  }
   if(plr.myCollider->pos.y > 500)
   {
     goto cont;
@@ -748,6 +763,5 @@ U0 PlayerDie()
 }
 
 Init;
-
 
 

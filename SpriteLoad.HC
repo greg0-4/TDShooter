@@ -4,6 +4,17 @@ CDC *tex_Coin1 = GRRead("Sprites/Coin/Coin1.GR.Z");
 CDC *tex_Coin2 = GRRead("Sprites/Coin/Coin2.GR.Z");
 
 
+CDC *tex_BrickWall = GRRead("Sprites/Tiles/Building/BrickWall.GR");
+CDC *tex_BrickWall_Door = GRRead("Sprites/Tiles/Building/BrickWallDoor.GR");
+CDC *tex_BrickWall_Window = GRRead("Sprites/Tiles/Building/BrickWallWindow.GR");
+CDC *tex_BrickWall_Roof = GRRead("Sprites/Tiles/Building/BrickWallRoof.GR");
+
+CDC *tex_Tile_Road = GRRead("Sprites/Tiles/Floor/TileRoad.GR");
+CDC *tex_Tile_Road_Left = GRRead("Sprites/Tiles/Floor/TileRoadLeft.GR");
+CDC *tex_Tile_Road_Right = GRRead("Sprites/Tiles/Floor/TileRoadRight.GR");
+CDC *tex_Tile_Road_Hole = GRRead("Sprites/Tiles/Floor/TileRoadHole.GR");
+CDC *tex_Tile_Road_Hole_Open = GRRead("Sprites/Tiles/Floor/TileRoadHoleOpen.GR");
+
 CDC *tex_Question1 = GRRead("Sprites/Tiles/Question1.GR.Z");
 CDC *tex_Question2 = GRRead("Sprites/Tiles/Question2.GR.Z");
 CDC *tex_Question3 = GRRead("Sprites/Tiles/Question3.GR.Z");
@@ -73,7 +84,7 @@ CDC *tex_Turtle_Walk2Right = GRRead("Sprites/Turtle/Walk2Right.GR.Z");
 CDC *tex_Turtle_Shell = GRRead("Sprites/Turtle/Shell.GR.Z");
 
 CDC *tex_Powerup_Shroom = GRRead("Sprites/PowerUps/Shroom.GR.Z");
-CDC *tex_Powerup_Flower1 = GRRead("Sprites/Flower/Flower1.GR.Z");
+CDC *tex_Powerup_Flower1 = GRRead("Sprites/Flower/Flower1.GR.Z");
 CDC *tex_Powerup_Flower2 = GRRead("Sprites/Flower/Flower2.GR.Z");
 
 
@@ -90,3 +101,8 @@ CDC *tex_Fireball2 = GRRead("Sprites/Fireball/2.GR.Z");
 CDC *tex_Fireball3 = GRRead("Sprites/Fireball/3.GR.Z");
 CDC *tex_Fireball4 = GRRead("Sprites/Fireball/4.GR.Z");
 
+CDC *tex_EndLevel_Bar = GRRead("Sprites/EndLevel/Bar.GR");
+CDC *tex_EndLevel_Zoomer = GRRead("Sprites/EndLevel/Zoomer.GR");
+
+CDC *tex_FadeIn1 = GRRead("Sprites/Blackout/Blackout1.GR");
+CDC *tex_FadeIn2 = GRRead("Sprites/Blackout/Blackout2.GR");

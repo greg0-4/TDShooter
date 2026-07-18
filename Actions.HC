@@ -75,7 +75,7 @@ Bool isEnemyAbove(Collider *a)
 
 
 
-  return FALSE;
+  return FALSE;
 }
 
 
@@ -83,7 +83,7 @@ U0 ShootFireball()
 {
   if(QueCnt(&fireball_que) >= 2)
   {
-    return;
+    return;
   }
   if(plr.powerUp != 2)
     return;

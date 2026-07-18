@@ -262,21 +262,115 @@ U0 CoinPlrCollision(Collider *a)
 
 U0 UpdateCam()
 {
-  if(plr.myCollider->pos.x > 320)
+  if(plr.isFinished)
+    return;
+
+  F64 targetX = plr.myCollider->pos.x  - 320;
+  if(targetX < 0)
   {
-  camOffset.x = plr.myCollider->pos.x - 320;
+    targetX = 0;
   }
-  else{
-  camOffset.x = 0;
+
+  F64 maxLimit = (current_map.width * 24) - 640 + 320;
+  
+  if(plr.myCollider->pos.x > maxLimit) {
+    targetX = (current_map.width * 24) - 640;
   }
+  camOffset.x = targetX;
   camOffset.y = 0;
+}
+
+U0 EndLevelPlrCollision(Collider *a)
+{
+  EndLevel *temp = endlevel_que.next;
+  while(temp != &endlevel_que)
+  {
+    EndLevel *next = temp->next;
+    if(a != temp->myCol)
+    {
+      goto cont;
+    }
+
+    if(AABBCollision(plr.myCollider, temp->endCol) && !plr.isFinished)
+    {
+      plr.isFinished = TRUE;
+      F64 yPosTouch = plr.myCollider->pos.y;
+      if(plr.powerUp != 0)
+      {
+        if(temp->pos.y - 24 > yPosTouch)
+        { 
+	  return;
+        }
+
+      }else{
+        if(temp->pos.y - 50 > yPosTouch)
+        {
+ 	  return;
+        }
+
+      }
+      NewParticle(temp->myCol->pos.x,
+      temp->myCol->pos.y,
+      tex_EndLevel_Zoomer,
+      1.5);
+      DelCollider(temp->myCol);
+      temp->myCol = NULL;
+      plr.isFinished = TRUE;
+      goto cont;
+    }
+
+    touch_cont:
+    if(AABBCollision(plr.myCollider, temp->myCol))
+    {
+      NewParticle(temp->myCol->pos.x,$BK,0$
+      temp->myCol->pos.y,
+      tex_EndLevel_Zoomer,
+      -1.5);
+      DelCollider(temp->myCol);
+      temp->myCol = NULL;
+      plr.isFinished = TRUE;
+      return;
+    }
+    
+    cont:
+    temp = next;
+  }
 }
 
 
 U0 UpdatePlrMove()
 {
 
+  if(plr.powerUp == 0)
+  {
+    plr.ducking = FALSE;
+  }
 
+  if(plr.isFinished)
+  {
+    if(plr.endlevel_Timer > 6 * 30)
+    {
+      CleanUpQueues;
+      Init(TRUE);
+    }
+    if(plr.ducking)
+    {
+      plr.ducking = FALSE;
+      if(plr.powerUp != 0)
+      {
+	F64 oldSize1Y = plr.myCollider->size.y;
+	plr.myCollider->size.y = PLR_BIG_SIZE_Y;
+	F64 newSize1Y = plr.myCollider->size.y;
+	plr.myCollider->pos.y -= newSize1Y - oldSize1Y;
+      }
+    }
+
+    plr.acceleration = -1;
+    plr.isWalking = TRUE;
+    plr.isLookingRight = TRUE;
+    plr.vel.x -= plr.acceleration;
+    plr.endlevel_Timer++;
+  }
   plrCol.isColTop = FALSE;
   plrCol.isColBottom = FALSE;
   plrCol.isColLeft = FALSE;
@@ -285,7 +379,7 @@ U0 UpdatePlrMove()
   if(plr.powerUp != 0)
   {
     Bool isAboveMe = isAbovePlayer;
-    if(keys.down && plr.grounded)
+    if(keys.down && plr.grounded && !plr.isFinished)
     {
       plr.ducking = TRUE;
     }
@@ -310,14 +404,14 @@ U0 UpdatePlrMove()
     }
   }
 
-  if(plr.ducking && plr.powerUp != 0)
+  if(plr.ducking && plr.powerUp != 0 && !plr.isFinished)
   {
     F64 oldSizeY = plr.myCollider->size.y;
     plr.myCollider->size.y = 22;
     F64 newSizeY = plr.myCollider->size.y;
     plr.myCollider->pos.y -= newSizeY - oldSizeY;
   }
-  else if(!plr.ducking && plr.powerUp != 0)
+  else if(!plr.ducking && plr.powerUp != 0 && !plr.isFinished)
   {
     oldSizeY = plr.myCollider->size.y;
     plr.myCollider->size.y = PLR_BIG_SIZE_Y;
@@ -325,27 +419,27 @@ U0 UpdatePlrMove()
     plr.myCollider->pos.y -= newSizeY - oldSizeY;
   }
 
-  if(keys.shift && !plr.isJumping)
+  if(keys.shift && !plr.isJumping && !plr.isFinished)
   {
     plr.acceleration = 2.0;
   }
-  else if(!keys.shift && !plr.isJumping)
+  else if(!keys.shift && !plr.isJumping && !plr.isFinished)
   {
     plr.acceleration = 1.5;
   }
 
-  if(plr.isJumping && !keys.shift)
+  if(plr.isJumping && !keys.shift && !plr.isFinished)
   {
     plr.vel.x /= FRICTION * 1.05;
   }
 
-  if(keys.left && !plr.ducking)
+  if(keys.left && !plr.ducking && !plr.isFinished)
   {
     plr.vel.x -= plr.acceleration;
     plr.isLookingRight = FALSE;
     plr.isWalking = TRUE;
   }
-  if(keys.right && !plr.ducking)
+  if(keys.right && !plr.ducking && !plr.isFinished)
   {
     plr.vel.x += plr.acceleration;
     plr.isLookingRight = TRUE;
@@ -418,6 +512,9 @@ U0 UpdatePlrMove()
 	case FLOWER_COLLIDER:
 	  FlowerPlrCollision(temp);
 	break;
+	case ENDLEVEL_COLLIDER:
+	  EndLevelPlrCollision(temp);
+	break;
       }
     }
     colx_continue:
@@ -480,7 +577,7 @@ U0 UpdatePlrMove()
   {
     plr.grounded = FALSE;
   }
-  if(keys.up && plr.grounded)
+  if(keys.up && plr.grounded  && !plr.isFinished)
   {
     plr.vel.y = -12;
     plr.grounded = FALSE;
@@ -794,6 +891,7 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
     }
 
 
+
     if(a->myCol->type == ENEMY_COLLIDER && temp->type == ENEMY_COLLIDER)
     {
       goto enemy_shell_cont;
@@ -822,8 +920,8 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
 	  {
 	    goto fire_cont;
 	  }
-	  ftemp->delete = TRUE;
-	  a->Health = - 1;
+	  a->Health = -1;
+	  DelFireball(ftemp);
 	  fire_cont:
 	  ftemp = fnext;
 	}
@@ -836,10 +934,10 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
 	goto enemy_continue;
       }
 
-      if(a->myCol->type == SHROOM_COLLIDER && temp->type == FIREBALL_COLLIDER)
-        goto enemy_continue;
-
-      if(a->myCol->type == SHROOM_COLLIDER && temp->type == SHROOM_COLLIDER)
+      if(a->myCol->type == SHROOM_COLLIDER && 
+       temp->type != WALL_COLLIDER && 
+       temp->type != BREAKABLE_COLLIDER &&
+       temp->type != QUESTION_COLLIDER)
       {
         goto enemy_continue;
       }
@@ -1096,7 +1194,7 @@ U0 UpdateTurtles()
     {
       NewTShell(temp->myCol->pos.x,
       temp->myCol->pos.y,
-      temp->isLookingRight);
+      plr.isLookingRight);
       DelTurtle(temp);
       goto turtle_nxt;
     }
@@ -1504,19 +1602,19 @@ U0 UpdateFireball(Fireball *a)
 
   if(posX > 660)
   {
-    a->delete = TRUE;
+    DelFireball(a);
     return;
   }
 
   if(posY > 480)
   {
-    a->delete = TRUE;
+    DelFireball(a);
     return;
   }
 
   if(posY <= - 24)
   {
-    a->delete = TRUE;
+    DelFireball(a);
     return;
   }
   
@@ -1542,7 +1640,7 @@ U0 UpdateFireballAnim(Fireball *a)
   if(a->frameTimer <= 0)
   {
     a->curFrame++;
-    a->frameTimer = 5;
+    a->frameTimer = 5;
   }
 }
 
@@ -1557,13 +1655,65 @@ U0 UpdateFireballs()
     UpdateFireball(temp);
     if(temp->delete)
     {
-      DelFireball(temp);
       goto cont;
     }
     cont:
     temp = next;
   }
 }
+
+U0 UpdateEndLevel(EndLevel *a)
+{
+
+  if(a->myCol == NULL)
+  {
+    return;
+  }
+
+  if(a->bounceDown)
+  {
+    a->myCol->pos.y -= 3;
+  }
+  else
+  {
+    a->myCol->pos.y += 3;
+  }
+  a->yOffset = a->pos.y - a->myCol->pos.y;
+
+  if(a->yOffset < 0)
+  {
+    a->bounceDown = !a->bounceDown;
+  }
+
+  if(a->yOffset > 80)
+  {
+    a->bounceDown = !a->bounceDown;
+  }
+}
+
+U0 UpdateEndLevels()
+{
+  EndLevel *temp = endlevel_que.next;
+  while(temp != &endlevel_que)
+  {
+    EndLevel *next = temp->next;
+    UpdateEndLevel(temp);
+    temp = next;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -5,7 +5,7 @@ U0 DrawSky(CDC *dc)
   dc->color=ROPF_DITHER+LTBLUE<<16+WHITE;
   GrRect3(dc,0,0,0,640,480);
   GrBlot(dc, 500, 50, tex_Sun);
-  GrBlot(dc, 100, 100, tex_Cloud);
+  GrBlot(dc, 100, 100, tex_Cloud);
   GrBlot(dc, 120, 105, tex_Cloud);
  GrBlot(dc, 220, 100, tex_Cloud);
  GrBlot(dc, 300, 90, tex_Cloud);
@@ -13,7 +13,7 @@ U0 DrawSky(CDC *dc)
   dc->color = BLACK;
 }
 
-U0 DrawColliders(CDC *dc)
+U0 DrawColliders(CDC *dc)
 {
 dc->color=ROPF_DITHER+GREEN<<16+TRANSPARENT;
   Collider *temp = collider_que.next;
@@ -50,7 +50,15 @@ U0 DrawMap(CDC *dc)
       {
 
 	case 1: GrBlot(dc, posX, posY, tex_Tile); break;
-        case 2: GrBlot(dc, posX, posY, tex_Brick); break;
+        case 2: GrBlot(dc, posX, posY, tex_BrickWall); break;
+	case 3: GrBlot(dc, posX, posY, tex_BrickWall_Door); break;
+	case 4: GrBlot(dc, posX, posY, tex_BrickWall_Window); break;
+	case 5: GrBlot(dc, posX, posY, tex_BrickWall_Roof); break;
+	case 6: GrBlot(dc, posX, posY, tex_Tile_Road_Left); break;
+	case 7: GrBlot(dc, posX, posY, tex_Tile_Road); break;
+	case 8: GrBlot(dc, posX, posY, tex_Tile_Road_Right); break;
+	case 9: GrBlot(dc, posX, posY, tex_Tile_Road_Hole); break;
+	case 10: GrBlot(dc, posX, posY, tex_Tile_Road_Hole_Open); break;
       }
     }
   }
@@ -335,10 +343,51 @@ U0 DrawFireballs(CDC *dc)
 }
 
 
+U0 DrawEndLevels(CDC *dc)
+{
+  EndLevel *temp = endlevel_que.next;
+  while(temp != &endlevel_que)
+  {
+    EndLevel *next = temp->next;
+
+    GrBlot(dc,
+    temp->pos.x - camOffset.x - 3,
+    temp->pos.y - camOffset.y - 48 - 14 - 24,
+    tex_EndLevel_Bar);
+
+    if(temp->myCol != NULL)
+    {
+      GrBlot(dc,
+      temp->myCol->pos.x - camOffset.x,
+      temp->myCol->pos.y - camOffset.y,
+      tex_EndLevel_Zoomer);
+    }
+
+    GrBlot(dc,
+    temp->pos.x - camOffset.x + 36,
+    temp->pos.y - camOffset.y - 48 - 14 - 24,
+    tex_EndLevel_Bar);
+
+    temp = next;
+  }
+}
 
 
+U0 DrawEndFadeIn(CDC *dc)
+{
+  if(plr.endlevel_Timer >= 3.5 * 30)
+  {
+    GrBlot(dc,
+    0, 0,
+    tex_FadeIn2);
+  }
 
-
+  if(plr.endlevel_Timer >= 3 * 30)
+  {
+    GrBlot(dc,
+    0,0, tex_FadeIn1);
+  }
+}
 
 
 
