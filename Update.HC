@@ -348,9 +348,12 @@ U0 UpdatePlrMove()
 
   if(plr.isFinished)
   {
+    // next level timer
     if(plr.endlevel_Timer > 6 * 30)
     {
-      CleanUpQueues;
+      //CleanUpQueues;
+      g_currentLevel = 2;
+      //LoadLevel;
       Init(TRUE);
     }
     if(plr.ducking)
@@ -902,7 +905,10 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
       goto enemy_shell_cont;
     }
  
-
+    if(temp->type == COIN_COLLIDER)
+    {
+      goto enemy_continue;
+    } 
     enemy_shell_cont:
 
     if(AABBCollision(a->myCol, temp))
@@ -1149,7 +1155,7 @@ CDC *GetTurtleSprite(Turtle *a)
     }
   }
   else
-  {
+  {
     switch(a->curFrame)
     {
       default: return tex_Turtle_Walk1Left; break;
@@ -1194,7 +1200,7 @@ U0 UpdateTurtles()
     {
       NewTShell(temp->myCol->pos.x,
       temp->myCol->pos.y,
-      plr.isLookingRight);
+      plr.isLookingRight);
       DelTurtle(temp);
       goto turtle_nxt;
     }

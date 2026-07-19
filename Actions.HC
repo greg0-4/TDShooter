@@ -74,8 +74,29 @@ Bool isEnemyAbove(Collider *a)
   }
 
 
+  // Coin
+  Coin *coin_temp = coin_que.next;
+  while(coin_temp != &coin_que)
+  {
+    Coin *coin_next = coin_temp->next;
+    if(coin_temp->myCol->pos.x < zone_right &&
+    coin_temp->myCol->pos.x + coin_temp->myCol->size.x > zone_left &&
+    coin_temp->myCol->pos.y < zone_bottom &&
+    coin_temp->myCol->pos.y + coin_temp->myCol->size.y > zone_top)
+    {
+      plr.coins++;
+      NewQuestionPart(
+      coin_temp->myCol->pos.x,
+      coin_temp->myCol->pos.y,
+      tex_Particle_Coin1);
+      DelCoin(coin_temp);
+      return TRUE; 
+    }
+    coin_temp = coin_next;    
+  }
 
-  return FALSE;
+
+  return FALSE;
 }
 
 
@@ -92,4 +113,4 @@ U0 ShootFireball()
     NewFireball(plr.myCollider->pos.x, plr.myCollider->pos.y, plr.isLookingRight);
     keys.space = FALSE;
   }
-}
+}

@@ -4,16 +4,32 @@ CDC *tex_Coin1 = GRRead("Sprites/Coin/Coin1.GR.Z");
 CDC *tex_Coin2 = GRRead("Sprites/Coin/Coin2.GR.Z");
 
 
-CDC *tex_BrickWall = GRRead("Sprites/Tiles/Building/BrickWall.GR");
-CDC *tex_BrickWall_Door = GRRead("Sprites/Tiles/Building/BrickWallDoor.GR");
-CDC *tex_BrickWall_Window = GRRead("Sprites/Tiles/Building/BrickWallWindow.GR");
-CDC *tex_BrickWall_Roof = GRRead("Sprites/Tiles/Building/BrickWallRoof.GR");
+CDC *tex_BrickWall = GRRead("Sprites/Tiles/Building/BrickWall.GR.Z");
+CDC *tex_BrickWall_Door = GRRead("Sprites/Tiles/Building/BrickWallDoor.GR.Z");
+CDC *tex_BrickWall_Window = GRRead("Sprites/Tiles/Building/BrickWallWindow.GR.Z");
+CDC *tex_BrickWall_Roof = GRRead("Sprites/Tiles/Building/BrickWallRoof.GR.Z");
 
-CDC *tex_Tile_Road = GRRead("Sprites/Tiles/Floor/TileRoad.GR");
-CDC *tex_Tile_Road_Left = GRRead("Sprites/Tiles/Floor/TileRoadLeft.GR");
-CDC *tex_Tile_Road_Right = GRRead("Sprites/Tiles/Floor/TileRoadRight.GR");
-CDC *tex_Tile_Road_Hole = GRRead("Sprites/Tiles/Floor/TileRoadHole.GR");
-CDC *tex_Tile_Road_Hole_Open = GRRead("Sprites/Tiles/Floor/TileRoadHoleOpen.GR");
+CDC *tex_BrickWall_WaterL = GRRead("Sprites/Tiles/Building/Sewers/BrickWallWaterL.GR.Z");
+CDC *tex_BrickWall_WaterR = GRRead("Sprites/Tiles/Building/Sewers/BrickWallWaterR.GR.Z");
+
+CDC *tex_Tile_Road = GRRead("Sprites/Tiles/Floor/TileRoad.GR.Z");
+CDC *tex_Tile_Road_Left = GRRead("Sprites/Tiles/Floor/TileRoadLeft.GR.Z");
+CDC *tex_Tile_Road_Right = GRRead("Sprites/Tiles/Floor/TileRoadRight.GR.Z");
+CDC *tex_Tile_Road_Hole = GRRead("Sprites/Tiles/Floor/TileRoadHole.GR.Z");
+CDC *tex_Tile_Road_Hole_Open = GRRead("Sprites/Tiles/Floor/TileRoadHoleOpen.GR.Z");
+
+CDC *tex_Tile_Water = GRRead("Sprites/Tiles/Floor/Sewers/TileWater.GR.Z");
+CDC *tex_Tile_Water_Left = GRRead("Sprites/Tiles/Floor/Sewers/TileWaterLeft.GR.Z");
+CDC *tex_Tile_Water_Right = GRRead("Sprites/Tiles/Floor/Sewers/TileWaterRight.GR.Z"); 
+
+CDC *tex_Tile_Sewer = GRRead("Sprites/Tiles/Floor/Sewers/Tile.GR.Z");
+
+
+CDC *tex_BrickHole_BL = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleBL.GR.Z");
+CDC *tex_BrickHole_BR = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleBR.GR.Z");
+CDC *tex_BrickHole_TL = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleTL.GR.Z");
+CDC *tex_BrickHole_TR = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleTR.GR.Z");
+
 
 CDC *tex_Question1 = GRRead("Sprites/Tiles/Question1.GR.Z");
 CDC *tex_Question2 = GRRead("Sprites/Tiles/Question2.GR.Z");
@@ -57,7 +73,7 @@ CDC *tex_PMan_Big_DuckRight = GRRead("Sprites/PMan/Big/DuckRight.GR.Z");
 CDC *tex_PMan_Flower_IdleRight = GRRead("Sprites/PMan/Big/Flower/IdleRight.GR.Z");
 CDC *tex_PMan_Flower_Walk1Right = GRRead("Sprites/PMan/Big/Flower/Walk1Right.GR.Z");
 CDC *tex_PMan_Flower_Walk2Right = GRRead("Sprites/PMan/Big/Flower/Walk2Right.GR.Z");
-CDC *tex_PMan_Flower_Walk3Right = GRRead("Sprites/Pman/Big/Flower/Walk3Right.GR.Z");
+CDC *tex_PMan_Flower_Walk3Right = GRRead("Sprites/PMan/Big/Flower/Walk3Right.GR.Z");
 
 CDC *tex_PMan_Flower_JumpRight = GRRead("Sprites/PMan/Big/Flower/JumpRight.GR.Z");
 CDC *tex_PMan_Flower_DuckRight = GRRead("Sprites/PMan/Big/Flower/DuckRight.GR.Z");
@@ -65,7 +81,7 @@ CDC *tex_PMan_Flower_DuckRight = GRRead("Sprites/PMan/Big/Flower/DuckRight.GR.Z"
 CDC *tex_PMan_Flower_IdleLeft = GRRead("Sprites/PMan/Big/Flower/IdleLeft.GR.Z");
 CDC *tex_PMan_Flower_Walk1Left = GRRead("Sprites/PMan/Big/Flower/Walk1Left.GR.Z");
 CDC *tex_PMan_Flower_Walk2Left = GRRead("Sprites/PMan/Big/Flower/Walk2Left.GR.Z");
-CDC *tex_PMan_Flower_Walk3Left = GRRead("Sprites/Pman/Big/Flower/Walk3Left.GR.Z");
+CDC *tex_PMan_Flower_Walk3Left = GRRead("Sprites/PMan/Big/Flower/Walk3Left.GR.Z");
 
 CDC *tex_PMan_Flower_JumpLeft = GRRead("Sprites/PMan/Big/Flower/JumpLeft.GR.Z");
 CDC *tex_PMan_Flower_DuckLeft = GRRead("Sprites/PMan/Big/Flower/DuckLeft.GR.Z");

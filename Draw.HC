@@ -1,6 +1,12 @@
 
 U0 DrawSky(CDC *dc)
 {
+  if(g_currentLevel == 2)
+  {
+    dc->color = BLACK;
+    GrRect(dc,0,0,640,480);
+    return;
+  }
   dc->dither_probability_u16=1;
   dc->color=ROPF_DITHER+LTBLUE<<16+WHITE;
   GrRect3(dc,0,0,0,640,480);
@@ -13,7 +19,7 @@ U0 DrawSky(CDC *dc)
   dc->color = BLACK;
 }
 
-U0 DrawColliders(CDC *dc)
+U0 DrawColliders(CDC *dc)
 {
 dc->color=ROPF_DITHER+GREEN<<16+TRANSPARENT;
   Collider *temp = collider_que.next;
@@ -30,6 +36,10 @@ dc->color=ROPF_DITHER+GREEN<<16+TRANSPARENT;
 U0 DrawMap(CDC *dc)
 {
   dc->color = BLACK;
+  if(current_map.mapArray == NULL)
+  {
+    return;
+  }
   I64 x, y;
   for(x=0;x<current_map.width;x++)
   {
@@ -59,6 +69,17 @@ U0 DrawMap(CDC *dc)
 	case 8: GrBlot(dc, posX, posY, tex_Tile_Road_Right); break;
 	case 9: GrBlot(dc, posX, posY, tex_Tile_Road_Hole); break;
 	case 10: GrBlot(dc, posX, posY, tex_Tile_Road_Hole_Open); break;
+	case 11: GrBlot(dc, posX, posY, tex_BrickHole_TL); break;
+	case 12: GrBlot(dc, posX, posY, tex_BrickHole_TR); break;
+	case 13: GrBlot(dc, posX, posY, tex_BrickHole_BL); break;
+	case 14: GrBlot(dc, posX, posY, tex_BrickHole_BR); break;
+	case 15: GrBlot(dc, posX, posY, tex_BrickWall_WaterL); break;
+	case 16: GrBlot(dc, posX, posY, tex_BrickWall_WaterR); break;
+        case 17: GrBlot(dc, posX, posY, tex_Tile_Water_Left); break;
+	case 18: GrBlot(dc, posX, posY, tex_Tile_Water); break;
+	case 19: GrBlot(dc, posX, posY, tex_Tile_Water_Right); break;
+	case 20: GrBlot(dc, posX, posY, tex_Tile_Sewer); break;
+
       }
     }
   }

@@ -210,6 +210,8 @@ class EndLevel : CQue
   Bool bounceDown;
 } endlevel_que;
 
+I8 g_currentLevel = 1;
+
 QuestionPart *NewQuestionPart(F64 x, F64 y, CDC *sprite, I64 timerReset = 1, I8 type = 1)
 {
   QuestionPart *new = CAlloc(sizeof(QuestionPart));
@@ -314,7 +316,7 @@ TShell *NewTShell(F64 x, F64 y, Bool isLookingRight)
   new->vel.y = 0;
   new->grounded = FALSE;
   new->isLookingRight = isLookingRight;
-  new->speed = 3;
+  new->speed = 5;
   QueIns(new, tshell_que);
   return new;
 }
@@ -538,6 +540,10 @@ Vector2 camOffset;
 
 U0 InitMapEntities()
 {
+  if(current_map.entityArray == NULL)
+  {
+    return;
+  }
   I64 x,y = 0;
   for(y=0;y<current_map.height;y++)
   {
@@ -570,6 +576,8 @@ I64 g_MouseY = ms.pos.y;
 
 U0 LoadMap(U8 *file)
 {
+  // stupid easy fix 
+  Cd(__DIR__);;
   U8 *buffer = FileRead(file);
   if(buffer == NULL)
   {
@@ -606,7 +614,6 @@ U0 LoadMap(U8 *file)
     }
   }
 
-  Free(buffer);
   current_map.mapArray = mapArray;
   current_map.entityArray = entityArray;
   current_map.width = width;
@@ -653,6 +660,22 @@ F64 Lerp(F64 a, F64 b, F64 t)
   return a + t * (b - a);
 }
 
+U0 CleanUpMap()
+{
+  if(current_map.mapArray)
+  {
+    Free(current_map.mapArray);
+    current_map.mapArray = NULL;
+  }
+  if(current_map.entityArray)
+  {
+    Free(current_map.entityArray);
+    current_map.entityArray = NULL;
+  }
+  current_map.width = 0;
+  current_map.height = 0;
+}
+
 U0 CleanUpQueues()
 {
   QueDel(&collider_que);
@@ -670,13 +693,26 @@ U0 CleanUpQueues()
   QueDel(&endlevel_que);
 }
 
+U0 LoadLevel()
+{
+
+  switch(g_currentLevel)
+  {
+    default: LoadMap("Maps/Test1.TXT"); break;
+    case 1: LoadMap("Maps/Test1.TXT"); break;
+    case 2: LoadMap("Maps/Sewers.TXT"); break;
+  }
+}
+
 U0 Init(Bool keepData = FALSE)
 {
 
 /*  current_map.mapArray = &gameMap;
   current_map.width = 20;
   current_map.height = MAP_HEIGHT; */
-LoadMap("Maps/Test1.TXT");
+//LoadMap("Maps/Test1.TXT");
+  CleanUpMap;
+  LoadLevel;
   QueInit(&collider_que);
   QueInit(&particle_que);
   QueInit(&slug_que);
@@ -690,7 +726,7 @@ LoadMap("Maps/Test1.TXT");
   QueInit(&flower_que);
   QueInit(&fireball_que);
   QueInit(&endlevel_que);
-
+  
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);
   plr.footCol = NewCollider(2, 22, 8, 4, 1); 
@@ -709,7 +745,7 @@ LoadMap("Maps/Test1.TXT");
   plr.immune = FALSE;
   if(!keepData)
   {
-    plr.powerUp = 0;
+    plr.powerUp = 0;
   }
   plr.isFinished = FALSE;
   plr.endlevel_Timer = 0;

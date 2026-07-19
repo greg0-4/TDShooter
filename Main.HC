@@ -49,7 +49,7 @@ U0 DrawIt(CTask *task, CDC *dc)
   UpdateMousePos;
 
 
-//  DrawColliders(dc);
+//  DrawColliders(dc);
   DrawMap(dc);
   DrawQuestionParts(dc);
   DrawBricks(dc);
@@ -68,13 +68,13 @@ U0 DrawIt(CTask *task, CDC *dc)
   DrawFireballs(dc);
   DrawEndFadeIn(dc);
   dc->color = WHITE;
-  GrPrint(dc,76, 24, "PlumberMan");
+  GrPrint(dc,76, 24, "PlumberMan");
   GrPrint(dc,76, 34, "000000");
 
   GrPrint(dc, 200, 34, "Coins: %d",plr.coins);
 
   GrPrint(dc, 376, 24, "World");
-  GrPrint(dc, 376, 34, "1-1");
+  GrPrint(dc, 376, 34, "1-%d",g_currentLevel);
 
   GrPrint(dc, 520, 24, "Time");
   GrPrint(dc, 520, 34, "300");
