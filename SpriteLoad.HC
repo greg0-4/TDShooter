@@ -23,7 +23,7 @@ CDC *tex_Tile_Water_Left = GRRead("Sprites/Tiles/Floor/Sewers/TileWaterLeft.GR.Z
 CDC *tex_Tile_Water_Right = GRRead("Sprites/Tiles/Floor/Sewers/TileWaterRight.GR.Z"); 
 
 CDC *tex_Tile_Sewer = GRRead("Sprites/Tiles/Floor/Sewers/Tile.GR.Z");
-
+
 
 CDC *tex_BrickHole_BL = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleBL.GR.Z");
 CDC *tex_BrickHole_BR = GRRead("Sprites/Tiles/Building/Sewers/BrickHoleBR.GR.Z");
@@ -122,3 +122,5 @@ CDC *tex_EndLevel_Zoomer = GRRead("Sprites/EndLevel/Zoomer.GR");
 
 CDC *tex_FadeIn1 = GRRead("Sprites/Blackout/Blackout1.GR");
 CDC *tex_FadeIn2 = GRRead("Sprites/Blackout/Blackout2.GR");
+
+CDC *tex_Platform = GRRead("Sprites/Platform.GR.Z");

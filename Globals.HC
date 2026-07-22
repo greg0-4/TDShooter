@@ -10,7 +10,7 @@
 #define FLOWER_COLLIDER 10
 #define FIREBALL_COLLIDER 11
 #define ENDLEVEL_COLLIDER 12
-
+#define PLATFORM_COLLIDER 13
 
 #define GRAVITY 1
 #define FRICTION 1.3
@@ -71,6 +71,8 @@ class Player
   I64 score;
 } plr;
 
+
+// i actually never used this feature idk why i added this
 class PlayerColStatus
 {
   Bool isColBottom;
@@ -210,6 +212,14 @@ class EndLevel : CQue
   Bool bounceDown;
 } endlevel_que;
 
+class Platform : CQue
+{
+  Collider *myCol;
+  Vector2 vel;
+  I64 type;
+  Bool falling;
+} platform_que;
+
 I8 g_currentLevel = 1;
 
 QuestionPart *NewQuestionPart(F64 x, F64 y, CDC *sprite, I64 timerReset = 1, I8 type = 1)
@@ -246,13 +256,12 @@ Collider *NewCollider(F64 x1, F64 y1, F64 x2, F64 y2, F64 type)
   return new;
 }
 
-// Basic Functions
-
 U0 DelCollider(Collider *a)
 {
   QueRem(a);
   Free(a);
 }
+
 
 Slug *NewSlug(F64 x, F64 y)
 {
@@ -316,7 +325,7 @@ TShell *NewTShell(F64 x, F64 y, Bool isLookingRight)
   new->vel.y = 0;
   new->grounded = FALSE;
   new->isLookingRight = isLookingRight;
-  new->speed = 5;
+  new->speed = 5;
   QueIns(new, tshell_que);
   return new;
 }
@@ -484,6 +493,24 @@ U0 KillTurtle(Turtle *a)
   DelTurtle(a); 
 }
 
+Platform *NewPlatform(F64 x, F64 y, I64 type = 1)
+{
+  Platform *new = CAlloc(sizeof(Platform));
+  new->myCol = NewCollider(x, y, 48, 8, PLATFORM_COLLIDER);
+  new->vel.x = 0;
+  new->vel.y = 0;
+  new->type = type;
+  new->falling = FALSE;
+  QueIns(new, platform_que);
+  return new;
+}
+
+U0 DelPlatform(Platform *a)
+{
+  DelCollider(a->myCol);
+  QueRem(a);
+  Free(a);
+}
 
 Bool AABBCollision(Collider *a, Collider *b)
 {
@@ -566,6 +593,7 @@ U0 InitMapEntities()
 	case 9: NewQuestion(x*24, y*24,,,TRUE); break;
 	case 10: NewCoin(x*24, y*24); break;
 	case 11: NewEndLevel(x*24, y*24); break;
+	case 12: NewPlatform(x*24, y*24); break;
       }
     }
   }
@@ -698,8 +726,8 @@ U0 LoadLevel()
 
   switch(g_currentLevel)
   {
-    default: LoadMap("Maps/Test1.TXT"); break;
-    case 1: LoadMap("Maps/Test1.TXT"); break;
+    default: LoadMap("Maps/City.TXT"); break;
+    case 1: LoadMap("Maps/City.TXT"); break;
     case 2: LoadMap("Maps/Sewers.TXT"); break;
   }
 }
@@ -726,6 +754,7 @@ U0 Init(Bool keepData = FALSE)
   QueInit(&flower_que);
   QueInit(&fireball_que);
   QueInit(&endlevel_que);
+  QueInit(&platform_que);
   
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);

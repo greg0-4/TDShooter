@@ -79,7 +79,7 @@ U0 DrawMap(CDC *dc)
 	case 18: GrBlot(dc, posX, posY, tex_Tile_Water); break;
 	case 19: GrBlot(dc, posX, posY, tex_Tile_Water_Right); break;
 	case 20: GrBlot(dc, posX, posY, tex_Tile_Sewer); break;
-
+
       }
     }
   }
@@ -410,6 +410,18 @@ U0 DrawEndFadeIn(CDC *dc)
   }
 }
 
-
-
+U0 DrawPlatforms(CDC *dc)
+{
+  Platform *temp = platform_que.next;
+  while(temp != &platform_que)
+  {
+    Platform *next = temp->next;
+    GrBlot(dc,
+    temp->myCol->pos.x - camOffset.x,
+    temp->myCol->pos.y - camOffset.y,
+    tex_Platform);
+    temp = next;
+  }
+}
+
 

@@ -337,7 +337,28 @@ U0 EndLevelPlrCollision(Collider *a)
   }
 }
 
+U0 PlrPlatformCollision(Collider *col)
+{
+  Platform *temp = platform_que.next;
+  while(temp != &platform_que)
+  {
+    Platform *next = temp->next;
+    if(temp->myCol != col)
+    {
+      goto cont;
+    }
+    if(temp->type == 1)
+    {
+      temp->falling = TRUE;
+    }
+    // otherwise do nothing
+    cont:
+    temp = next;
+  }
+}
 
+
+// Player Movement and PlrCollisions
 U0 UpdatePlrMove()
 {
 
@@ -352,6 +373,7 @@ U0 UpdatePlrMove()
     if(plr.endlevel_Timer > 6 * 30)
     {
       //CleanUpQueues;
+      // will change after i start working on more levels
       g_currentLevel = 2;
       //LoadLevel;
       Init(TRUE);
@@ -476,7 +498,7 @@ U0 UpdatePlrMove()
     Collider *next = temp->next;
     if(temp != plr.myCollider && AABBCollision(plr.myCollider, temp))
     {
-      if(temp->type == 2 || temp->type == BREAKABLE_COLLIDER || temp->type == QUESTION_COLLIDER)
+      if(temp->type == 2 || temp->type == BREAKABLE_COLLIDER || temp->type == QUESTION_COLLIDER || temp->type == PLATFORM_COLLIDER)
       {
         if(plr.vel.x > 0)
         {
@@ -544,28 +566,33 @@ U0 UpdatePlrMove()
     next = temp->next;
     if(temp != plr.myCollider && AABBCollision(plr.myCollider, temp))
     {
-      if(temp->type == 2 || temp->type == BREAKABLE_COLLIDER || temp->type == QUESTION_COLLIDER)
+      if(temp->type == 2 || temp->type == BREAKABLE_COLLIDER || temp->type == QUESTION_COLLIDER || temp->type == PLATFORM_COLLIDER)
       {
-          if(plr.vel.y > 0)
+        if(plr.vel.y > 0)
+        {
+          plr.myCollider->pos.y = temp->pos.y - plr.myCollider->size.y;
+	  plrCol.isColBottom = TRUE;
+          plr.grounded = TRUE;
+
+	  if(temp->type == PLATFORM_COLLIDER)
+	  {
+	    PlrPlatformCollision(temp);
+	  }
+        }
+        else
+        {
+          plrCol.isColTop = TRUE;
+     	  plr.myCollider->pos.y = temp->pos.y + temp->size.y;
+          if(temp->type == QUESTION_COLLIDER)
           {
-            plr.myCollider->pos.y = temp->pos.y - plr.myCollider->size.y;
-	    plrCol.isColBottom = TRUE;
-            plr.grounded = TRUE;
+	    QuestionPlrCollision(temp);
           }
-          else
-          {
-            plrCol.isColTop = TRUE;
-     	    plr.myCollider->pos.y = temp->pos.y + temp->size.y;
-            if(temp->type == QUESTION_COLLIDER)
-            {
-	      QuestionPlrCollision(temp);
-            }
-	    if(temp->type == BREAKABLE_COLLIDER)
-	    {
-	      BreakablePlrCollision(temp);
-            }
+	  if(temp->type == BREAKABLE_COLLIDER)
+	  {
+	    BreakablePlrCollision(temp);
           }
-          plr.vel.y = 0;
+        }
+        plr.vel.y = 0;
         break;
       }
 
@@ -1155,7 +1182,7 @@ CDC *GetTurtleSprite(Turtle *a)
     }
   }
   else
-  {
+  {
     switch(a->curFrame)
     {
       default: return tex_Turtle_Walk1Left; break;
@@ -1708,7 +1735,33 @@ U0 UpdateEndLevels()
   }
 }
 
+U0 UpdatePlatform(Platform *a)
+{
+  if(a->type == 1)
+  {
+    if(a->falling)
+    {
+      a->vel.y += 0.5;
+      a->myCol->pos.y += a->vel.y;
+    }
 
+    if((a->myCol->pos.y - camOffset.y) > 490)
+    {
+      DelPlatform(a);
+    }
+  }
+}
+
+U0 UpdatePlatforms()
+{
+  Platform *temp = platform_que.next;
+  while(temp != &platform_que)
+  {
+    Platform *next = temp->next;
+    UpdatePlatform(temp);
+    temp = next;
+  }
+}
 
 
 
