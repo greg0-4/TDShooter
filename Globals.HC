@@ -24,6 +24,9 @@ Bool g_Gaming = TRUE;
 
 Bool g_Paused = FALSE;
 
+F64 dT = 0;
+F64 lastTime = tS;
+F64 dtScale;
 
 class Vector2
 {
@@ -56,7 +59,7 @@ class Player
   I8 walkFrame;
   I64 walk_frameSpeed;
   I64 walk_frameSpeedReset;
-  I64 endlevel_Timer;
+  F64 endlevel_Timer;
 
   Bool ducking;
 
@@ -114,14 +117,14 @@ class Enemy : CQue
 
 class Slug : Enemy
 {
-  I64 walk_frameSpeed;
+  F64 walk_frameSpeed;
   I64 curFrame;
 
 } slug_que;
 
 class Turtle : Enemy
 {
-  I64 walk_frameSpeed;
+  F64 walk_frameSpeed;
   I64 curFrame;
 } turtle_que;
 
@@ -147,7 +150,7 @@ class Breakable : CQue
   Collider *myCol;
   CDC *curSprite;
   Bool isFalling;
-  I8 offsetY;
+  F64 offsetY;
 };
 
 class Brick : Breakable
@@ -162,8 +165,8 @@ class QuestionBlock : CQue
   Bool isPowerUp;
   CDC *curSprite;
   Bool isFalling;
-  I8 offsetY;
-  I8 glowTimer;
+  F64 offsetY;
+  F64 glowTimer;
   Bool glowing;
   Bool hidden;
 } question_que;
@@ -173,9 +176,9 @@ class QuestionPart : CQue
   Vector2 pos;
   CDC *curSprite;
   I64 curFrame;
-  I64 frameTimer;
-  I64 timerReset;
-  I64 offsetY;
+  F64 frameTimer;
+  F64 timerReset;
+  F64 offsetY;
   I8 type;
   Bool isFalling;
 } questionpart_que;
@@ -185,7 +188,7 @@ class Coin : CQue
   Collider *myCol;
   CDC *curSprite;
   Bool glowing;
-  I8 glowingTimer;
+  F64 glowingTimer;
 } coin_que; 
 
 class Flower : Coin
@@ -198,7 +201,7 @@ class Fireball : CQue
   Vector2 vel;
   CDC *curSprite;
   I8 curFrame;
-  I8 frameTimer;
+  F64 frameTimer;
   Bool grounded;
   Bool delete;
 } fireball_que;
@@ -208,7 +211,7 @@ class EndLevel : CQue
   Collider *myCol;
   Collider *endCol;
   Vector2 pos;
-  I8 yOffset;
+  F64 yOffset;
   Bool bounceDown;
 } endlevel_que;
 
@@ -476,6 +479,7 @@ EndLevel *NewEndLevel(F64 x, F64 y)
   new->myCol = NewCollider(x, y, 48, 12, ENDLEVEL_COLLIDER);
   new->endCol = NewCollider(x - 24, 0, 8, 480, ENDLEVEL_COLLIDER);
   new->yOffset = 0;
+  new->bounceDown = TRUE;
   QueIns(new, endlevel_que.last);
   return new;
 }
@@ -727,7 +731,7 @@ U0 LoadLevel()
   switch(g_currentLevel)
   {
     default: LoadMap("Maps/City.TXT"); break;
-    case 1: LoadMap("Maps/City.TXT"); break;
+    case 1: LoadMap("Maps/City.TXT"); break;
     case 2: LoadMap("Maps/Sewers.TXT"); break;
   }
 }
@@ -758,7 +762,7 @@ U0 Init(Bool keepData = FALSE)
   
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);
-  plr.footCol = NewCollider(2, 22, 8, 4, 1); 
+  plr.footCol = NewCollider(2, 22, 10, 6, 1); 
   plr.vel.x = 0;
   plr.vel.y = 0;
   plr.acceleration = 1.3;
@@ -795,6 +799,10 @@ U0 Init(Bool keepData = FALSE)
   InitMapEntities;
 }
 
+U0 UnitsSec(F64 val)
+{
+  return val * 30.0;
+}
 
 U0 PlayerDie()
 {

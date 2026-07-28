@@ -113,4 +113,4 @@ U0 ShootFireball()
     NewFireball(plr.myCollider->pos.x, plr.myCollider->pos.y, plr.isLookingRight);
     keys.space = FALSE;
   }
-}
+}

@@ -247,8 +247,9 @@ U0 DrawBricks(CDC *dc)
     }
     GrBlot(dc,
     temp->myCol->pos.x - camOffset.x,
-    temp->myCol->pos.y - camOffset.y - temp->offsetY - 2,
+    temp->myCol->pos.y - camOffset.y - temp->offsetY,
     temp->curSprite);
+    dc->color = BLACK;
     cont:
     temp = next;
   }
@@ -272,7 +273,7 @@ U0 DrawQuestions(CDC *dc)
     }
     GrBlot(dc,
     temp->myCol->pos.x - camOffset.x,
-    temp->myCol->pos.y - camOffset.y - temp->offsetY - 2,
+    temp->myCol->pos.y - camOffset.y - temp->offsetY,
     temp->curSprite); 
     cont:
     temp = next;
@@ -370,7 +371,10 @@ U0 DrawEndLevels(CDC *dc)
   while(temp != &endlevel_que)
   {
     EndLevel *next = temp->next;
-
+    if(temp == NULL)
+    {
+      goto cont;
+    }
     GrBlot(dc,
     temp->pos.x - camOffset.x - 3,
     temp->pos.y - camOffset.y - 48 - 14 - 24,
@@ -378,6 +382,14 @@ U0 DrawEndLevels(CDC *dc)
 
     if(temp->myCol != NULL)
     {
+      F64 posX = temp->myCol->pos.x - camOffset.x;
+      F64 posY = temp->myCol->pos.y - camOffset.y;
+      if(posX < - 26)
+        goto cont;
+      if(posY > 650)
+        goto cont;
+
+
       GrBlot(dc,
       temp->myCol->pos.x - camOffset.x,
       temp->myCol->pos.y - camOffset.y,
@@ -388,7 +400,7 @@ U0 DrawEndLevels(CDC *dc)
     temp->pos.x - camOffset.x + 36,
     temp->pos.y - camOffset.y - 48 - 14 - 24,
     tex_EndLevel_Bar);
-
+    cont:
     temp = next;
   }
 }
@@ -396,6 +408,7 @@ U0 DrawEndLevels(CDC *dc)
 
 U0 DrawEndFadeIn(CDC *dc)
 {
+  dc->color = BLACK;
   if(plr.endlevel_Timer >= 3.5 * 30)
   {
     GrBlot(dc,
@@ -416,12 +429,19 @@ U0 DrawPlatforms(CDC *dc)
   while(temp != &platform_que)
   {
     Platform *next = temp->next;
+    F64 posX = temp->myCol->pos.x - camOffset.x;
+    F64 posY = temp->myCol->pos.y - camOffset.y;
+    if(posX < - 26)
+      goto cont;
+    if(posY > 650)
+      goto cont;
     GrBlot(dc,
     temp->myCol->pos.x - camOffset.x,
     temp->myCol->pos.y - camOffset.y,
     tex_Platform);
+    cont:
     temp = next;
   }
 }
-
+
 

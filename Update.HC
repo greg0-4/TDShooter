@@ -1,3 +1,10 @@
+U0 UpdateDeltaTime()
+{
+  F64 currentTime = tS;
+  dT = currentTime - lastTime;
+  lastTime = currentTime;
+  dtScale = dT * 30.0;
+}
 
 U0 SlugPlrCollision(Collider *a)
 {
@@ -146,7 +153,11 @@ U0 BreakablePlrCollision(Collider *a)
       goto br_cont;
     }
 
-    br_temp->isFalling = TRUE;
+    if(br_temp->isFalling == FALSE)
+    {
+      br_temp->offsetY = 5;
+      br_temp->isFalling = TRUE;
+    }
     isEnemyAbove(a);
 
     if(plr.powerUp != 0)
@@ -189,7 +200,12 @@ U0 QuestionPlrCollision(Collider *a)
     }
 
     isEnemyAbove(a);
-    temp->isFalling = TRUE;
+
+    if(temp->isFalling == FALSE)
+    {
+      temp->offsetY = 5;
+      temp->isFalling = TRUE;
+    }
     if(!temp->isPowerUp)
     {
       plr.coins++;
@@ -394,7 +410,7 @@ U0 UpdatePlrMove()
     plr.isWalking = TRUE;
     plr.isLookingRight = TRUE;
     plr.vel.x -= plr.acceleration;
-    plr.endlevel_Timer++;
+    plr.endlevel_Timer += 1 *dtScale;
   }
   plrCol.isColTop = FALSE;
   plrCol.isColBottom = FALSE;
@@ -489,8 +505,7 @@ U0 UpdatePlrMove()
   {
     plr.isWalking = FALSE;
   }
-
-  plr.myCollider->pos.x += plr.vel.x;
+  plr.myCollider->pos.x += plr.vel.x * dtScale;
   // X Axis collision
   Collider *temp = collider_que.next;
   while(temp != &collider_que)
@@ -545,7 +560,7 @@ U0 UpdatePlrMove()
     colx_continue:
     temp = next;
   }
-  plr.vel.y += plr.gravity;
+  plr.vel.y += plr.gravity * (dtScale);
 
   if(Abs(plr.vel.y) < 0.1)
   {
@@ -558,7 +573,7 @@ U0 UpdatePlrMove()
     plr.vel.y = 15;
   }
 
-  plr.myCollider->pos.y += plr.vel.y;
+  plr.myCollider->pos.y += plr.vel.y * dtScale;
   // Y Axis collision
   temp = collider_que.next;
   while(temp != &collider_que)
@@ -635,13 +650,13 @@ U0 UpdatePlrMove()
     plr.gravity = 1.5;
   }
 
-  if(plr.myCollider->pos.y >= 500)
+  if(plr.myCollider->pos.y >= 500.0)
   {
-    PlayerDie;
+   PlayerDie;
   }
   plr.headCol->pos.x = plr.myCollider->pos.x;
   plr.headCol->pos.y = plr.myCollider->pos.y - 20;
-  plr.footCol->pos.x = plr.myCollider->pos.x + 2;
+  plr.footCol->pos.x = plr.myCollider->pos.x + 1;
   plr.footCol->pos.y = plr.myCollider->size.y + plr.myCollider->pos.y;
   
 }
@@ -855,7 +870,7 @@ U0 UpdatePlayerAnimation()
    plr.curSprite = GetPlayerIdleSprite;
   if(plr.isWalking && !plr.isJumping)
   {
-    plr.walk_frameSpeed--;
+    plr.walk_frameSpeed -= 1 * dtScale;
     if(plr.walkFrame > 3)
     {
       plr.walkFrame = 1;
@@ -1087,10 +1102,10 @@ U0 UpdateEnemy(Enemy *a)
   {
     a->vel.x = -a->speed;
   }
-  a->myCol->pos.x += a->vel.x;
+  a->myCol->pos.x += a->vel.x *dtScale;
   EnemyCollisions(a);
-  a->vel.y += GRAVITY; 
-  a->myCol->pos.y += a->vel.y;
+  a->vel.y += GRAVITY *dtScale; 
+  a->myCol->pos.y += a->vel.y * dtScale;
   EnemyCollisions(a, TRUE);
 }
 
@@ -1118,7 +1133,7 @@ CDC GetSlugSprite(Slug *a)
 
 U0 UpdateSlugAnimation(Slug *a)
 {
-  a->walk_frameSpeed--;
+  a->walk_frameSpeed -= 1 * dtScale;
   a->curSprite = GetSlugSprite(a);
   if(a->curFrame > 2)
   {
@@ -1160,9 +1175,9 @@ U0 UpdateParticles()
   while(temp != &particle_que)
   {
     Particle *next = temp->next;
-    temp->pos.x += temp->vel.x;
-    temp->vel.y += GRAVITY;
-    temp->pos.y += temp->vel.y;
+    temp->pos.x += temp->vel.x *dtScale;
+    temp->vel.y += GRAVITY *dtScale;
+    temp->pos.y += temp->vel.y *dtScale;
     if(temp->pos.y - camOffset.y > 500)
       DelParticle(temp);
     temp = next;
@@ -1194,7 +1209,7 @@ CDC *GetTurtleSprite(Turtle *a)
 
 U0 UpdateTurtleAnimation(Turtle *a)
 {
-  a->walk_frameSpeed--;
+  a->walk_frameSpeed -= 1 * dtScale;
   a->curSprite = GetTurtleSprite(a);
   if(a->curFrame > 2)
   {
@@ -1274,7 +1289,7 @@ U0 UpdatePlayerImmune()
   }
   if(plr.immune)
   {
-    plr.immuneTimer--;
+    plr.immuneTimer -= 1 * dtScale;
     if(plr.immuneTimer <= 0)
     {
       plr.immuneFlash = !plr.immuneFlash;
@@ -1288,7 +1303,7 @@ U0 UpdatePauseTimer()
 {
   if(g_Paused)
   {
-    plr.pauseTimer--;
+    plr.pauseTimer -= 1 * dtScale;
     if(plr.pauseTimer <= 0)
     {
       g_Paused = FALSE;
@@ -1311,18 +1326,10 @@ U0 UpdateShrooms()
 
 U0 UpdateBreakable(Breakable *a)
 {
-  if(!a->isFalling)
+  if(a->isFalling)
   {
-    a->offsetY = Lerp(a->offsetY, -5.0, 0.3);
-    if(a->offsetY <= -4.0)
-    {
-      a->isFalling = TRUE;
-    }
-  }
-  else
-  {
-    a->offsetY = Lerp(a->offsetY, 0.0, 0.3);
-    if(a->offsetY > -0.1)
+     a->offsetY = Lerp(a->offsetY, 0.0, 0.3 * dtScale);
+    if(a->offsetY <= 0.9)
     {
       a->offsetY = 0;
       a->isFalling = FALSE;
@@ -1342,7 +1349,6 @@ U0 UpdateBreakables()
   }
 }
 
-
 U0 UpdateQuestion(QuestionBlock *a)
 {  
   if(a->amount != 0)
@@ -1352,7 +1358,7 @@ U0 UpdateQuestion(QuestionBlock *a)
       a->curSprite = tex_Brick;
       goto sprite_cont;
     }
-    a->glowTimer--;
+    a->glowTimer -= 1 *dtScale;
     if(a->glowing)
     {
       a->curSprite = tex_Question1;
@@ -1375,24 +1381,19 @@ U0 UpdateQuestion(QuestionBlock *a)
     a->curSprite = tex_Question3;
   }
 
-  if(!a->isFalling)
+  
+  if(a->isFalling)
   {
-    a->offsetY = Lerp(a->offsetY, -5.0, 0.3);
-    if(a->offsetY <= -4.0)
-    {
-      a->isFalling = TRUE;
-    }
-  }
-  else
-  {
-    a->offsetY = Lerp(a->offsetY, 0.0, 0.3);
-    if(a->offsetY > -0.1)
+     a->offsetY = Lerp(a->offsetY, 0.0, 0.3 * dtScale);
+    if(a->offsetY <= 0.9)
     {
       a->offsetY = 0;
       a->isFalling = FALSE;
     }
   }
+
 }
+
 
 U0 UpdateQuestions()
 {
@@ -1412,7 +1413,7 @@ U0 UpdateQuestionPart(QuestionPart *a)
   if(a->type == 1)
   {
     
-    a->frameTimer--;
+    a->frameTimer -= 1 *dtScale;
 
     if(a->curFrame > 3)
     {
@@ -1430,12 +1431,12 @@ U0 UpdateQuestionPart(QuestionPart *a)
     if(a->frameTimer <= 0)
     {
       a->frameTimer = a->timerReset;
-      a->curFrame++;
+      a->curFrame += 1;
     }
 
     if(!a->isFalling)
     {
-      a->offsetY += 10;
+      a->offsetY += 10 * dtScale;
     }
     if(a->offsetY > 60)
     {
@@ -1446,7 +1447,7 @@ U0 UpdateQuestionPart(QuestionPart *a)
   // Shroom
   if(a->type == 2)
   {
-    a->offsetY += 1;
+    a->offsetY += 1 * dtScale;
     if(a->offsetY > 25)
     {
       NewShroom(a->pos.x, a->pos.y - 25);
@@ -1456,7 +1457,7 @@ U0 UpdateQuestionPart(QuestionPart *a)
   }
   if(a->type == 3)
   {
-    a->offsetY += 1;
+    a->offsetY += 1 * dtScale;
     if(a->offsetY > 25)
     {
       NewFlower(a->pos.x, a->pos.y - 25);
@@ -1480,7 +1481,7 @@ U0 UpdateQuestionParts()
 
 U0 UpdateCoin(Coin *a)
 {
-  a->glowingTimer--;
+  a->glowingTimer -= 1 * dtScale;
 
   if(a->glowing)
   {
@@ -1511,7 +1512,7 @@ U0 UpdateCoins()
 
 U0 UpdateFlower(Flower *a)
 {
-  a->glowingTimer--;
+  a->glowingTimer -= 1 * dtScale;
 
   if(a->glowing)
   {
@@ -1590,7 +1591,7 @@ U0 FireballCollisions(Fireball *a, Collider *temp, Bool yAxis = FALSE)
 U0 UpdateFireball(Fireball *a)
 {
 
-  a->myCol->pos.x += a->vel.x;
+  a->myCol->pos.x += a->vel.x * dtScale;
   Collider *temp = collider_que.next;
   while(temp != &collider_que)
   {
@@ -1605,10 +1606,10 @@ U0 UpdateFireball(Fireball *a)
     cont_x:
     temp = next;
   }
-  a->vel.y += GRAVITY;
+  a->vel.y += GRAVITY * dtScale;
   if(a->vel.y > 8)
     a->vel.y = 8;
-  a->myCol->pos.y += a->vel.y;
+  a->myCol->pos.y += a->vel.y * dtScale;
   temp = collider_que.next;
   while(temp != &collider_que)
   {
@@ -1629,7 +1630,7 @@ U0 UpdateFireball(Fireball *a)
 
   if(posX <= -24)
   {
-    a->delete = TRUE;
+    DelFireball(a);
     return;
   }
 
@@ -1655,7 +1656,7 @@ U0 UpdateFireball(Fireball *a)
 
 U0 UpdateFireballAnim(Fireball *a)
 {
-  a->frameTimer--;
+  a->frameTimer -= 1 * dtScale;
 
   switch(a->curFrame)
   {
@@ -1705,22 +1706,21 @@ U0 UpdateEndLevel(EndLevel *a)
 
   if(a->bounceDown)
   {
-    a->myCol->pos.y -= 3;
+    a->myCol->pos.y -= 3 *dtScale;
   }
   else
   {
-    a->myCol->pos.y += 3;
+    a->myCol->pos.y += 3 *dtScale;
   }
   a->yOffset = a->pos.y - a->myCol->pos.y;
 
   if(a->yOffset < 0)
   {
-    a->bounceDown = !a->bounceDown;
+    a->bounceDown = TRUE;
   }
-
-  if(a->yOffset > 80)
+  else if(a->yOffset > 80)
   {
-    a->bounceDown = !a->bounceDown;
+    a->bounceDown = FALSE;
   }
 }
 
@@ -1741,13 +1741,13 @@ U0 UpdatePlatform(Platform *a)
   {
     if(a->falling)
     {
-      a->vel.y += 0.5;
-      a->myCol->pos.y += a->vel.y;
+      a->vel.y += 0.5 * dtScale;
+      a->myCol->pos.y += a->vel.y * dtScale;
     }
 
     if((a->myCol->pos.y - camOffset.y) > 490)
     {
-      DelPlatform(a);
+      DelPlatform(a);
     }
   }
 }
