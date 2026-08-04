@@ -102,7 +102,7 @@ Bool isEnemyAbove(Collider *a)
 
 U0 ShootFireball()
 {
-  if(QueCnt(&fireball_que) >= 2)
+  if(QueCnt(&fireball_que) >= 2)
   {
     return;
   }

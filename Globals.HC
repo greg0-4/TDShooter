@@ -11,6 +11,7 @@
 #define FIREBALL_COLLIDER 11
 #define ENDLEVEL_COLLIDER 12
 #define PLATFORM_COLLIDER 13
+#define BOUNCEOFF_COLLIDER 14
 
 #define GRAVITY 1
 #define FRICTION 1.3
@@ -219,9 +220,16 @@ class Platform : CQue
 {
   Collider *myCol;
   Vector2 vel;
+  Vector2 previousPos;
   I64 type;
+  F64 timer;
   Bool falling;
 } platform_que;
+
+class BounceOff : CQue
+{
+  Collider *myCol;
+} bounceoff_que;
 
 I8 g_currentLevel = 1;
 
@@ -261,6 +269,21 @@ Collider *NewCollider(F64 x1, F64 y1, F64 x2, F64 y2, F64 type)
 
 U0 DelCollider(Collider *a)
 {
+  QueRem(a);
+  Free(a);
+}
+
+BounceOff *NewBounceOff(F64 x, F64 y)
+{
+  BounceOff *new = CAlloc(sizeof(BounceOff));
+  new->myCol = NewCollider(x, y, 24, 24, BOUNCEOFF_COLLIDER);
+  QueIns(new, bounceoff_que);
+  return new;
+}
+
+U0 DelBounceOff(BounceOff *a)
+{
+  DelCollider(a->myCol);
   QueRem(a);
   Free(a);
 }
@@ -598,6 +621,8 @@ U0 InitMapEntities()
 	case 10: NewCoin(x*24, y*24); break;
 	case 11: NewEndLevel(x*24, y*24); break;
 	case 12: NewPlatform(x*24, y*24); break;
+	case 13: NewBounceOff(x*24, y *24); break;
+	case 14: NewPlatform(x*24, y*24, 2); break;
       }
     }
   }
@@ -723,6 +748,8 @@ U0 CleanUpQueues()
   QueDel(&flower_que);
   QueDel(&fireball_que);
   QueDel(&endlevel_que);
+  QueDel(&platform_que);
+  QueDel(&bounceoff_que);
 }
 
 U0 LoadLevel()
@@ -731,8 +758,9 @@ U0 LoadLevel()
   switch(g_currentLevel)
   {
     default: LoadMap("Maps/City.TXT"); break;
-    case 1: LoadMap("Maps/City.TXT"); break;
+    case 1: LoadMap("Maps/Rooftops.TXT"); break;
     case 2: LoadMap("Maps/Sewers.TXT"); break;
+    case 3: LoadMap("Maps/Rooftops.TXT"); break;
   }
 }
 
@@ -759,6 +787,7 @@ U0 Init(Bool keepData = FALSE)
   QueInit(&fireball_que);
   QueInit(&endlevel_que);
   QueInit(&platform_que);
+  QueInit(&bounceoff_que);
   
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);

@@ -123,4 +123,35 @@ CDC *tex_EndLevel_Zoomer = GRRead("Sprites/EndLevel/Zoomer.GR");
 CDC *tex_FadeIn1 = GRRead("Sprites/Blackout/Blackout1.GR");
 CDC *tex_FadeIn2 = GRRead("Sprites/Blackout/Blackout2.GR");
 
-CDC *tex_Platform = GRRead("Sprites/Platform.GR.Z");
+CDC *tex_Platform = GRRead("Sprites/Platform.GR.Z");
+
+CDC *tex_Tile_Platform = GRRead("Sprites/Tiles/Platform.GR.Z");
+
+CDC *tex_Mansion_Wall = GRRead("Sprites/Tiles/Mansion/Wall.GR.Z");
+CDC *tex_Mansion_Wall_Down = GRRead("Sprites/Tiles/Mansion/WallDown.GR.Z");
+CDC *tex_Mansion_Wall_Top = GRRead("Sprites/Tiles/Mansion/WallTop.GR.Z");
+
+CDC *tex_MansionWall_Window_BL = GRRead("Sprites/Tiles/Mansion/WallWindowBL.GR.Z");
+CDC *tex_MansionWall_Window_BR = GRRead("Sprites/Tiles/Mansion/WallWindowBR.GR.Z");
+CDC *tex_MansionWall_Window_TL = GRRead("Sprites/Tiles/Mansion/WallWindowTL.GR.Z");
+CDC *tex_MansionWall_Window_TR = GRRead("Sprites/Tiles/Mansion/WallWindowTR.GR.Z");
+
+CDC *tex_MansionWall_Entrance_BL = GRRead("Sprites/Tiles/Mansion/WallEntranceBL.GR.Z");
+CDC *tex_MansionWall_Entrance_BR = GRRead("Sprites/Tiles/Mansion/WallEntranceBR.GR.Z");
+CDC *tex_MansionWall_Entrance_TL = GRRead("Sprites/Tiles/Mansion/WallEntranceTL.GR.Z");
+CDC *tex_MansionWall_Entrance_TR = GRRead("Sprites/Tiles/Mansion/WallEntranceTR.GR.Z");
+
+CDC *tex_MansionTemple_Pillar = GRRead("Sprites/Tiles/Mansion/Pillar.GR.Z");
+CDC *tex_MansionTemple_PillarUp = GRRead("Sprites/Tiles/Mansion/PillarUp.GR.Z");
+CDC *tex_MansionTemple_PillarDown = GRRead("Sprites/Tiles/Mansion/PillarDown.GR.Z");
+
+CDC *tex_MansionTemple_Roof1Left = GRRead("Sprites/Tiles/Mansion/Temple1Left.GR.Z");
+CDC *tex_MansionTemple_Roof1Right = GRRead("Sprites/Tiles/Mansion/Temple1Right.GR.Z");
+CDC *tex_MansionTemple_Roof2Left = GRRead("Sprites/Tiles/Mansion/Temple2Left.GR.Z");
+CDC *tex_MansionTemple_Roof2Right = GRRead("Sprites/Tiles/Mansion/Temple2Right.GR.Z");
+
+
+CDC *tex_MansionTemple_StatueBL = GRRead("Sprites/Tiles/Mansion/TempleStatueBL.GR.Z");
+CDC *tex_MansionTemple_StatueBR = GRRead("Sprites/Tiles/Mansion/TempleStatueBR.GR.Z");
+CDC *tex_MansionTemple_StatueTL = GRRead("Sprites/Tiles/Mansion/TempleStatueTL.GR.Z");
+CDC *tex_MansionTemple_StatueTR = GRRead("Sprites/Tiles/Mansion/TempleStatueTR.GR.Z");

@@ -46,12 +46,12 @@ U0 DrawIt(CTask *task, CDC *dc)
     UpdateCoins;
     UpdatePlatforms;
     UpdateParticles;
-    UpdateEndLevels;    
+    UpdateEndLevels;
   }
   UpdateMousePos;
 
 
-  // DrawColliders(dc);
+  // DrawColliders(dc);
   DrawMap(dc);
   DrawQuestionParts(dc);
   DrawBricks(dc);
@@ -76,7 +76,7 @@ U0 DrawIt(CTask *task, CDC *dc)
   GrPrint(dc,76, 24, "PlumberMan");
   GrPrint(dc,76, 34, "000000");
 
-  GrPrint(dc, 200, 34, "Coins: %d",plr.coins);
+  GrPrint(dc, 200, 34, "Coins: %d",plr.coins);
 
   GrPrint(dc, 376, 24, "World");
   GrPrint(dc, 376, 34, "1-%d",g_currentLevel);

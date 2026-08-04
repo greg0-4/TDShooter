@@ -13,9 +13,9 @@ U0 DrawSky(CDC *dc)
   GrBlot(dc, 500, 50, tex_Sun);
   GrBlot(dc, 100, 100, tex_Cloud);
   GrBlot(dc, 120, 105, tex_Cloud);
- GrBlot(dc, 220, 100, tex_Cloud);
- GrBlot(dc, 300, 90, tex_Cloud);
- GrBlot(dc, 320, 100, tex_Cloud);
+  GrBlot(dc, 220, 100, tex_Cloud);
+  GrBlot(dc, 300, 90, tex_Cloud);
+  GrBlot(dc, 320, 100, tex_Cloud);
   dc->color = BLACK;
 }
 
@@ -79,7 +79,29 @@ U0 DrawMap(CDC *dc)
 	case 18: GrBlot(dc, posX, posY, tex_Tile_Water); break;
 	case 19: GrBlot(dc, posX, posY, tex_Tile_Water_Right); break;
 	case 20: GrBlot(dc, posX, posY, tex_Tile_Sewer); break;
-
+	case 21: GrBlot(dc, posX, posY, tex_Mansion_Wall_Top); break;
+	case 22: GrBlot(dc, posX, posY, tex_Mansion_Wall); break;
+	case 23: GrBlot(dc, posX, posY, tex_Mansion_Wall_Down); break;
+	case 24: GrBlot(dc, posX, posY, tex_MansionWall_Window_TL); break;
+	case 25: GrBlot(dc, posX, posY, tex_MansionWall_Window_TR); break;
+	case 26: GrBlot(dc, posX, posY, tex_MansionWall_Window_BL); break;
+	case 27: GrBlot(dc, posX, posY, tex_MansionWall_Window_BR); break;
+	case 28: GrBlot(dc, posX, posY, tex_MansionWall_Entrance_BL); break;
+	case 29: GrBlot(dc, posX, posY, tex_MansionWall_Entrance_BR); break;
+	case 30: GrBlot(dc, posX, posY, tex_MansionWall_Entrance_TL); break;
+	case 31: GrBlot(dc, posX, posY, tex_MansionWall_Entrance_TR); break;
+	case 32: GrBlot(dc, posX, posY, tex_MansionTemple_PillarUp); break;
+	case 33: GrBlot(dc, posX, posY, tex_MansionTemple_Pillar); break;
+	case 34: GrBlot(dc, posX, posY, tex_MansionTemple_PillarDown); break;
+	case 35: GrBlot(dc, posX, posY, tex_MansionTemple_Roof1Left); break;
+	case 36: GrBlot(dc, posX, posY, tex_MansionTemple_Roof1Right); break;
+	case 37: GrBlot(dc, posX, posY, tex_MansionTemple_Roof2Left); break;
+	case 38: GrBlot(dc, posX, posY, tex_MansionTemple_Roof2Right); break;
+	case 39: GrBlot(dc, posX, posY, tex_MansionTemple_StatueTL); break;
+	case 40: GrBlot(dc, posX, posY, tex_MansionTemple_StatueTR); break;
+	case 41: GrBlot(dc, posX, posY, tex_MansionTemple_StatueBL); break;
+	case 42: GrBlot(dc, posX, posY, tex_MansionTemple_StatueBR); break;
+	case 43: GrBlot(dc, posX, posY, tex_Tile_Platform); break;
       }
     }
   }
@@ -382,7 +404,7 @@ U0 DrawEndLevels(CDC *dc)
 
     if(temp->myCol != NULL)
     {
-      F64 posX = temp->myCol->pos.x - camOffset.x;
+      F64 posX = temp->myCol->pos.x - camOffset.x;
       F64 posY = temp->myCol->pos.y - camOffset.y;
       if(posX < - 26)
         goto cont;

@@ -353,7 +353,7 @@ U0 EndLevelPlrCollision(Collider *a)
   }
 }
 
-U0 PlrPlatformCollision(Collider *col)
+U0 PlrPlatformCollision(Collider *col, Bool xAxis = FALSE)
 {
   Platform *temp = platform_que.next;
   while(temp != &platform_que)
@@ -367,7 +367,25 @@ U0 PlrPlatformCollision(Collider *col)
     {
       temp->falling = TRUE;
     }
-    // otherwise do nothing
+    if(temp->type == 2 && !xAxis)
+    {
+      F64 posOffset = temp->myCol->pos.x - temp->previousPos.x;
+      plr.myCollider->pos.x += posOffset;
+    }
+    else if(temp->type == 2 && xAxis)
+    {
+      F64 plrCenterX  = plr.myCollider->pos.x + (plr.myCollider->size.x / 2.0);
+      F64 platformCenterX = temp->myCol->pos.x + (temp->myCol->size.x / 2.0);
+      if (plrCenterX < platformCenterX)
+      {
+        plr.myCollider->pos.x = temp->myCol->pos.x - plr.myCollider->size.x;
+      }
+      else
+      {
+        plr.myCollider->pos.x = temp->myCol->pos.x + temp->myCol->size.x;
+      }
+
+    }
     cont:
     temp = next;
   }
@@ -390,7 +408,7 @@ U0 UpdatePlrMove()
     {
       //CleanUpQueues;
       // will change after i start working on more levels
-      g_currentLevel = 2;
+      g_currentLevel++;
       //LoadLevel;
       Init(TRUE);
     }
@@ -517,13 +535,27 @@ U0 UpdatePlrMove()
       {
         if(plr.vel.x > 0)
         {
+	  if(temp->type == PLATFORM_COLLIDER)
+	  {
+	    PlrPlatformCollision(temp, TRUE);
+	  }else{
+
           plr.myCollider->pos.x = temp->pos.x - plr.myCollider->size.x;
           plrCol.isColRight = TRUE;
+          }
+
         }
         else
         {
+          if(temp->type == PLATFORM_COLLIDER)
+          {
+            plr.vel.x = 2;
+            PlrPlatformCollision(temp, TRUE);
+          }else{
+
 	  plr.myCollider->pos.x = temp->pos.x + temp->size.x;
           plrCol.isColLeft = TRUE;
+          }
         }
         plr.vel.x = 0;
         plr.isWalking = FALSE;
@@ -940,6 +972,16 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
     if(a->myCol->type == ENEMY_COLLIDER && temp->type == ENEMY_COLLIDER)
     {
       goto enemy_shell_cont;
+    }
+
+    if(a->myCol->type == TSHELL_COLLIDER && temp->type == COIN_COLLIDER)
+    {
+      goto enemy_continue;
+    }
+
+    if(a->myCol->type == TSHELL_COLLIDER && temp->type == BOUNCEOFF_COLLIDER)
+    {
+      goto enemy_continue;
     }
 
     if(a->myCol->type == TSHELL_COLLIDER || temp->type == TSHELL_COLLIDER)
@@ -1737,11 +1779,13 @@ U0 UpdateEndLevels()
 
 U0 UpdatePlatform(Platform *a)
 {
+  a->previousPos.x = a->myCol->pos.x;
+  a->previousPos.y = a->myCol->pos.y;
   if(a->type == 1)
   {
     if(a->falling)
     {
-      a->vel.y += 0.5 * dtScale;
+      a->vel.y += 0.5 * dtScale;
       a->myCol->pos.y += a->vel.y * dtScale;
     }
 
@@ -1749,6 +1793,61 @@ U0 UpdatePlatform(Platform *a)
     {
       DelPlatform(a);
     }
+  }
+
+  if(a->type == 2)
+  {
+    // falling will be used as direction here as im lazy to add useless booleans
+    // just for code readability, like really. it's pointless and stupid
+    Collider *temp = collider_que.next;
+    while(temp != &collider_que)
+    {
+      Collider *next = temp->next;
+      Bool isPlr = isColliderPlayer(temp);
+      if(isPlr)
+      {
+        goto cont;
+      }
+      if(temp == a->myCol)
+      {
+        goto cont;
+      }
+      if(temp->type != BOUNCEOFF_COLLIDER)
+      {
+	goto cont;
+      }
+      if(AABBCollision(a->myCol, temp) && a->timer > 0.15)
+      {
+        a->falling = !a->falling;
+        a->timer = 0.0;
+        if(a->falling)
+        {
+	  a->myCol->pos.x += 1.0 *dtScale;
+	}
+	else
+	{
+	  a->myCol->pos.x -= 1.0 *dtScale;
+	}
+	break;
+       
+      }
+      cont:
+      temp = next;
+    }
+
+    if(a->timer > 1.57)
+      a->timer = 1.57;
+
+    if(a->falling)
+    {
+      a->vel.x = (2 * Sin(a->timer)) * dtScale;
+    }
+    else
+    {
+      a->vel.x = (-2 * Sin(a->timer)) * dtScale;
+    }
+    a->timer += dT;
+    a->myCol->pos.x += a->vel.x;
   }
 }
 
