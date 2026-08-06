@@ -981,7 +981,7 @@ U0 EnemyCollisions(Enemy *a, Bool yAxis = FALSE)
 
     if(a->myCol->type == TSHELL_COLLIDER && temp->type == BOUNCEOFF_COLLIDER)
     {
-      goto enemy_continue;
+      goto enemy_continue;
     }
 
     if(a->myCol->type == TSHELL_COLLIDER || temp->type == TSHELL_COLLIDER)
@@ -1598,7 +1598,7 @@ U0 FireballCollisions(Fireball *a, Collider *temp, Bool yAxis = FALSE)
 	case QUESTION_COLLIDER:
 	case ENEMY_COLLIDER:
 	case TSHELL_COLLIDER:
-	  a->delete = TRUE;
+	  DelFireball(a);
 	  return;
         break;
       }

@@ -758,7 +758,7 @@ U0 LoadLevel()
   switch(g_currentLevel)
   {
     default: LoadMap("Maps/City.TXT"); break;
-    case 1: LoadMap("Maps/Rooftops.TXT"); break;
+    case 1: LoadMap("Maps/City.TXT"); break;
     case 2: LoadMap("Maps/Sewers.TXT"); break;
     case 3: LoadMap("Maps/Rooftops.TXT"); break;
   }
@@ -807,7 +807,7 @@ U0 Init(Bool keepData = FALSE)
   plr.immune = FALSE;
   if(!keepData)
   {
-    plr.powerUp = 0;
+    plr.powerUp = 2;
   }
   plr.isFinished = FALSE;
   plr.endlevel_Timer = 0;
