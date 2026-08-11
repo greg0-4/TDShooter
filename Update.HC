@@ -1596,9 +1596,7 @@ U0 FireballCollisions(Fireball *a, Collider *temp, Bool yAxis = FALSE)
 	case WALL_COLLIDER: 
 	case BREAKABLE_COLLIDER:
 	case QUESTION_COLLIDER:
-	case ENEMY_COLLIDER:
-	case TSHELL_COLLIDER:
-	  DelFireball(a);
+	  a->delete = TRUE;
 	  return;
         break;
       }
@@ -1670,7 +1668,13 @@ U0 UpdateFireball(Fireball *a)
   F64 posX = a->myCol->pos.x - camOffset.x;
   F64 posY = a->myCol->pos.y - camOffset.y;
 
-  if(posX <= -24)
+  if(a->delete)
+  {
+    DelFireball(a);
+    return;
+  }
+
+  if(posX <= -120)
   {
     DelFireball(a);
     return;
@@ -1729,10 +1733,6 @@ U0 UpdateFireballs()
 
     UpdateFireballAnim(temp);
     UpdateFireball(temp);
-    if(temp->delete)
-    {
-      goto cont;
-    }
     cont:
     temp = next;
   }
@@ -1863,6 +1863,26 @@ U0 UpdatePlatforms()
 }
 
 
+U0 UpdateSpinLaser(SpinLaser *a)
+{
+  a->deg += 3 * dtScale;
+  a->deg = FixDeg(a->deg);
+
+  a->killCol->pos.x = a->myCol->pos.x + 100 * Cos(Deg2Rad(a->deg));
+  a->killCol->pos.y = a->myCol->pos.y + 100 * Sin(Deg2Rad(a->deg));
+  
+}
+
+U0 UpdateSpinLasers()
+{
+  SpinLaser *temp = spinlaser_que.next;
+  while(temp != &spinlaser_que)
+  {
+    SpinLaser *next = temp->next;
+    UpdateSpinLaser(temp);
+    temp = next;
+  }
+}
 
 
 

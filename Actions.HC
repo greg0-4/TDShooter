@@ -30,7 +30,7 @@ Bool isEnemyAbove(Collider *a)
   {
     Turtle *t_next = t_temp->next;
     if(t_temp->myCol->pos.x < zone_right &&
-    t_temp->myCol->pos.x + t_temp->myCol->size.x > zone_left &&
+    t_temp->myCol->pos.x + t_temp->myCol->size.x > zone_left &&
     t_temp->myCol->pos.y < zone_bottom &&
     t_temp->myCol->pos.y + t_temp->myCol->size.y > zone_top)
     {
@@ -103,7 +103,7 @@ Bool isEnemyAbove(Collider *a)
 U0 ShootFireball()
 {
   if(plr.isFinished)
-    return;
+    return;
 
 
   if(QueCnt(&fireball_que) >= 2)

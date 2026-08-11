@@ -21,6 +21,8 @@
 
 #define PLR_BIG_SIZE_Y 40
 
+#define PI 3.14159265359
+
 Bool g_Gaming = TRUE;
 
 Bool g_Paused = FALSE;
@@ -231,6 +233,13 @@ class BounceOff : CQue
   Collider *myCol;
 } bounceoff_que;
 
+class SpinLaser : CQue
+{
+  Collider *myCol;
+  Collider *killCol;
+  F64 deg;
+} spinlaser_que;
+
 I8 g_currentLevel = 1;
 
 QuestionPart *NewQuestionPart(F64 x, F64 y, CDC *sprite, I64 timerReset = 1, I8 type = 1)
@@ -271,6 +280,16 @@ U0 DelCollider(Collider *a)
 {
   QueRem(a);
   Free(a);
+}
+
+SpinLaser *NewSpinLaser(F64 x, F64 y)
+{
+  SpinLaser *new = CAlloc(sizeof(SpinLaser));
+  new->deg = 0;
+  new->myCol = NewCollider(x, y, 24, 24, WALL_COLLIDER);
+  new->killCol = NewCollider(x, y - 100, 24, 24, WALL_COLLIDER);
+  QueIns(new, spinlaser_que);
+  return new;
 }
 
 BounceOff *NewBounceOff(F64 x, F64 y)
@@ -489,6 +508,8 @@ Fireball *NewFireball(F64 x, F64 y, Bool isLookingRight = TRUE;)
 
 U0 DelFireball(Fireball *a)
 {
+  if(!a)
+    return;
   DelCollider(a->myCol);
   QueRem(a);
   Free(a);
@@ -623,6 +644,7 @@ U0 InitMapEntities()
 	case 12: NewPlatform(x*24, y*24); break;
 	case 13: NewBounceOff(x*24, y *24); break;
 	case 14: NewPlatform(x*24, y*24, 2); break;
+	case 15: NewSpinLaser(x * 24, y * 24); break;
       }
     }
   }
@@ -630,6 +652,26 @@ U0 InitMapEntities()
 
 I64 g_MouseX = ms.pos.x;
 I64 g_MouseY = ms.pos.y;
+
+F64 FixDeg(I64 deg)
+{
+  if(deg > 359)
+  {
+    deg -= 360;
+  }
+  if(deg < 0)
+  {
+    deg += 360;
+  }
+  return deg;
+}
+
+F64 Deg2Rad(I64 deg)
+{
+  F64 rad = ToF64(deg) * (PI/180);
+  return rad;
+}
+
 
 U0 LoadMap(U8 *file)
 {
@@ -757,8 +799,8 @@ U0 LoadLevel()
 
   switch(g_currentLevel)
   {
-    default: LoadMap("Maps/City.TXT"); break;
-    case 1: LoadMap("Maps/City.TXT"); break;
+    default: LoadMap("Maps/Test.TXT"); break;
+    case 1: LoadMap("Maps/City.TXT"); break;
     case 2: LoadMap("Maps/Sewers.TXT"); break;
     case 3: LoadMap("Maps/Rooftops.TXT"); break;
   }
@@ -771,6 +813,7 @@ U0 Init(Bool keepData = FALSE)
   current_map.width = 20;
   current_map.height = MAP_HEIGHT; */
 //LoadMap("Maps/Test1.TXT");
+  g_currentLevel = 4;
   CleanUpMap;
   LoadLevel;
   QueInit(&collider_que);
@@ -788,6 +831,7 @@ U0 Init(Bool keepData = FALSE)
   QueInit(&endlevel_que);
   QueInit(&platform_que);
   QueInit(&bounceoff_que);
+  QueInit(&spinlaser_que);
   
   plr.headCol = NewCollider(0,-10, 12, 20, 1);
   plr.myCollider = NewCollider(0, 0, 12, 22, 1);
@@ -807,7 +851,7 @@ U0 Init(Bool keepData = FALSE)
   plr.immune = FALSE;
   if(!keepData)
   {
-    plr.powerUp = 2;
+    plr.powerUp = 0;
   }
   plr.isFinished = FALSE;
   plr.endlevel_Timer = 0;

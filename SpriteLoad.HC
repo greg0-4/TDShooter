@@ -125,7 +125,7 @@ CDC *tex_FadeIn2 = GRRead("Sprites/Blackout/Blackout2.GR");
 
 CDC *tex_Platform = GRRead("Sprites/Platform.GR.Z");
 
-CDC *tex_Tile_Platform = GRRead("Sprites/Tiles/Platform.GR.Z");
+CDC *tex_Tile_Platform = GRRead("Sprites/Tiles/Platform.GR.Z");
 
 CDC *tex_Mansion_Wall = GRRead("Sprites/Tiles/Mansion/Wall.GR.Z");
 CDC *tex_Mansion_Wall_Down = GRRead("Sprites/Tiles/Mansion/WallDown.GR.Z");
@@ -155,3 +155,6 @@ CDC *tex_MansionTemple_StatueBL = GRRead("Sprites/Tiles/Mansion/TempleStatueBL.G
 CDC *tex_MansionTemple_StatueBR = GRRead("Sprites/Tiles/Mansion/TempleStatueBR.GR.Z");
 CDC *tex_MansionTemple_StatueTL = GRRead("Sprites/Tiles/Mansion/TempleStatueTL.GR.Z");
 CDC *tex_MansionTemple_StatueTR = GRRead("Sprites/Tiles/Mansion/TempleStatueTR.GR.Z");
+
+
+CDC *tex_SpinLaser_Ball = GRRead("Sprites/SpinLaser/Ball.GR.Z");

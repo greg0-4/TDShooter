@@ -1,7 +1,7 @@
 
 U0 DrawSky(CDC *dc)
 {
-  if(g_currentLevel == 2)
+  if((g_currentLevel % 2) == 0)
   {
     dc->color = BLACK;
     GrRect(dc,0,0,640,480);
@@ -32,7 +32,7 @@ dc->color=ROPF_DITHER+GREEN<<16+TRANSPARENT;
   dc->color = BLACK;
 }
 
-
+
 U0 DrawMap(CDC *dc)
 {
   dc->color = BLACK;
@@ -101,7 +101,7 @@ U0 DrawMap(CDC *dc)
 	case 40: GrBlot(dc, posX, posY, tex_MansionTemple_StatueTR); break;
 	case 41: GrBlot(dc, posX, posY, tex_MansionTemple_StatueBL); break;
 	case 42: GrBlot(dc, posX, posY, tex_MansionTemple_StatueBR); break;
-	case 43: GrBlot(dc, posX, posY, tex_Tile_Platform); break;
+	case 43: GrBlot(dc, posX, posY, tex_Tile_Platform); break;
       }
     }
   }
@@ -467,3 +467,22 @@ U0 DrawPlatforms(CDC *dc)
 }
 
 
+U0 DrawSpinLasers(CDC *dc)
+{
+
+  SpinLaser *temp = spinlaser_que.next;
+  while(temp != &spinlaser_que)
+  {
+    SpinLaser *next = temp->next;
+    GrBlot(dc,
+    temp->myCol->pos.x - camOffset.x,
+    temp->myCol->pos.y - camOffset.y,
+    tex_Question3);
+    GrBlot(dc,
+    temp->killCol->pos.x - camOffset.x,
+    temp->killCol->pos.y - camOffset.y,
+    tex_SpinLaser_Ball);
+    temp = next;
+  }
+
+}
